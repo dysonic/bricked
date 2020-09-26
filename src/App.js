@@ -1,25 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
+import * as React from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 import './App.css';
+import MainMenu from './components/MainMenu';
+import { Home } from './components/Home';
+import BrickContainer from './containers/BrickContainer';
+import CoursingChart from './components/CoursingChart';
+import BrickworkContainer from './containers/BrickworkContainer';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="container App">
+        <div className="row">
+          <div className="col-sm-12">
+            <header className="">
+                  <h1>Bricked</h1>
+            </header>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12 col-md-2">
+            <MainMenu />
+          </div>
+          <main className="main-content col-sm-12 col-md-10">
+            <Switch>
+                <Route exact path="/">
+                  <Home />
+                </Route>
+                <Route path="/brick">
+                  <BrickContainer />
+                </Route>
+                <Route path="/coursing-chart">
+                  <CoursingChart />
+                </Route>
+                <Route path="/brickwork">
+                  <BrickworkContainer />
+                </Route>
+            </Switch>
+          </main>
+        </div>
+      </div>
+    </Router>
   );
 }
 
