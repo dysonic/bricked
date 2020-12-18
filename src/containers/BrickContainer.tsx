@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Brick } from '../interfaces/brick';
+import { Brick } from '../types/brick';
 import BrickForm from '../components/BrickForm';
 import IsoBrick from '../components/IsoBrick';
 import { connect, ConnectedProps } from 'react-redux';

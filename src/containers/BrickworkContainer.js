@@ -1,5 +1,5 @@
 import React from 'react';
-import Brickwork from '../components/Brickwork';
+import { Brickwork } from '../components/Brickwork';
 import { connect } from 'react-redux';
 import { getBrick } from '../redux/selectors';
 import BRICKWORK from '../constants/brickwork';

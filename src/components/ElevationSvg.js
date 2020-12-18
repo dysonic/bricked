@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Elevation(props) {
+function ElevationSvg(props) {
   const { elevation } = props;
 
   const viewBoxX = Math.ceil(elevation.height);
@@ -18,4 +18,4 @@ function Elevation(props) {
 
 
 
-export default Elevation;
+export default ElevationSvg;

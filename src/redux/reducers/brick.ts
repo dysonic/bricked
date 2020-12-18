@@ -4,7 +4,7 @@ import {
   UPDATE_BRICK_HEIGHT,
   BrickActionTypes,
 } from '../types/brick';
-import { Brick } from '../../interfaces/brick';
+import { Brick } from '../../types/brick';
 
 const LOCAL_STORAGE_KEY = 'brick';
 

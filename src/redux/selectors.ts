@@ -1,4 +1,4 @@
-import { Brick } from '../interfaces/brick';
+import { Brick } from '../types/brick';
 
 interface RootState {
   brick: Brick

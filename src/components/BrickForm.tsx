@@ -1,5 +1,5 @@
 import React, { FC, useState }  from 'react';
-import { Brick } from '../interfaces/brick';
+import { Brick } from '../types/brick';
 import getNumeric from '../utils/get-numeric';
 
 type BrickFormProps = {

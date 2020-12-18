@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 const BRICK_HEIGHT = 76;
 const VERTICAL_GAUGE = [86, 172, 257, 343, 429, 514, 600];
