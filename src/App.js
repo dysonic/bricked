@@ -8,7 +8,7 @@ import './App.css';
 import MainMenu from './components/MainMenu';
 import { Home } from './components/Home';
 import BrickContainer from './containers/BrickContainer';
-import CoursingChart from './components/CoursingChart';
+import CoursingChartContainer from './containers/CoursingChartContainer';
 import BrickworkContainer from './containers/BrickworkContainer';
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
                   <BrickContainer />
                 </Route>
                 <Route path="/coursing-chart">
-                  <CoursingChart />
+                  <CoursingChartContainer />
                 </Route>
                 <Route path="/brickwork">
                   <BrickworkContainer />
