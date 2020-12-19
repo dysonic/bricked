@@ -6,7 +6,7 @@ type CoursingDiagramProps = {
 };
 const CoursingDiagram: FC<CoursingDiagramProps> = ({ verticalGauge }) => {
   const courses = [...verticalGauge].reverse().map((mark, i) =>
-    <li>
+    <li key={mark.height}>
       <div className="height-label">{mark.height}</div>
       <div className="brick">C{verticalGauge.length-i}</div>
       <div className="mortar-label">{mark.mortarThickness}</div>

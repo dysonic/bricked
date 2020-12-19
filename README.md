@@ -1,3 +1,9 @@
+# Bricked: WIP
+
+This project is for laying out different brick patterns on a wall (i.e. elevation).
+
+## Tech Info
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

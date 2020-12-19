@@ -8,7 +8,8 @@ type BrickworkProps = {
 export const Brickwork: FC<BrickworkProps> = ({ elevation }) => {
   return (
     <div className="brickwork row">
-        <div className="col-md-2">
+        <div className="col-md-6">
+            <h2>{elevation.bond.label}</h2>
             <ElevationSvg elevation={elevation} />
         </div>
     </div>
