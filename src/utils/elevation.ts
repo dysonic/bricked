@@ -21,9 +21,10 @@ export interface Elevation {
   brick: Brick;
   bond: Bond;
   height: number;
-  width?: number
+  width: number;
   numberOfCourses: number;
   brickPalette: BrickPalette;
+  verticalGauge: Array<VerticalGaugeMark>;
   courses: Array<string>;
 }
 

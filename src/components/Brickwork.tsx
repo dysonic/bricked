@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import ElevationSvg from './ElevationSvg';
+import { ElevationSvg } from './ElevationSvg';
 import { Elevation } from '../utils/elevation';
 
 type BrickworkProps = {

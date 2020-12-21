@@ -13,7 +13,7 @@ const generateElevations = (bonds: Array<Bond>, brick: Brick) => {
       brick,
       bond,
       numberOfCourses: 4,
-      repeatPattern: 4,
+      repeatPattern: 2,
     };
     return generate(options);
   });
