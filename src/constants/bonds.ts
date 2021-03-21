@@ -19,8 +19,8 @@ export interface Bond {
 }
 
 export const DOUBLE_FLEMISH_BOND: Bond = {
-  id: 'double-flemish-bond',
-  label: 'Double Flemish bond',
+  id: 'double-flemish',
+  label: 'Double Flemish',
   example: {
     odd: 'shs',
     even: 'hqsqh',

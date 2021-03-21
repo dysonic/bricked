@@ -5,11 +5,12 @@ import {
   Route,
 } from "react-router-dom";
 import './App.css';
-import MainMenu from './components/MainMenu';
+import { MainMenu } from './components/MainMenu';
 import { Home } from './components/Home';
 import BrickContainer from './containers/BrickContainer';
 import CoursingChartContainer from './containers/CoursingChartContainer';
 import BrickworkContainer from './containers/BrickworkContainer';
+import BuildWallContainer from './containers/BuildWallContainer';
 
 function App() {
   return (
@@ -39,6 +40,9 @@ function App() {
                 </Route>
                 <Route path="/brickwork">
                   <BrickworkContainer />
+                </Route>
+                <Route path="/buildwall">
+                  <BuildWallContainer />
                 </Route>
             </Switch>
           </main>
