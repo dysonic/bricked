@@ -20,9 +20,9 @@ const validateNumber = (value:string | undefined, input:any):boolean => {
 type BuildWallFormProps = {
   className?: string,
   brick: Brick,
-  handleSubmit: Function,
+  onSubmit: Function,
 };
-export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, handleSubmit }) => {
+export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, onSubmit }) => {
   const [wallLength, setWallLength] = useState<string>();
   const [wallHeight, setWallHeight] = useState<string>();
   const [wallBondId, setWallBondId] = useState<string>(bonds[0].id);
@@ -40,7 +40,7 @@ export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, handleSubmit }) =
 
     const wl = getNumeric(wallLength);
     const wh = getNumeric(wallHeight);
-    handleSubmit(wl, wh, wallBondId);
+    onSubmit(wl, wh, wallBondId);
   };
 
   const bondOptions = [...bonds].map((bond) =>

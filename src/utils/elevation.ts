@@ -1,20 +1,40 @@
-import { cloneDeep} from 'lodash';
 import { Brick } from '../types/brick';
 import { getVerticalGauge, VerticalGaugeMark } from '../constants/coursingCharts';
 import { Bond, BondPattern } from '../constants/bonds';
 import { createBrickPalette, BrickPalette, calculateWidthFromCourse } from './brick-palette';
+
 export interface GenerateOptions {
   brick: Brick;
   bond: Bond;
   height?: number;
-  width?: number;
   numberOfCourses?: number;
+  width?: number;
   repeatPattern?: number;
 }
+
 interface ElevationOptions extends GenerateOptions {
-  verticalGauge?: Array<VerticalGaugeMark>;
-  brickPalette?: BrickPalette;
-  courses?: Array<string>;
+  verticalGauge: Array<VerticalGaugeMark>;
+  brickPalette: BrickPalette;
+}
+
+interface ElevationOptionsHeight extends ElevationOptions {
+  height: number;
+}
+
+interface ElevationOptionsNumberOfCourses extends ElevationOptions {
+  numberOfCourses: number;
+}
+
+interface ElevationOptionsWidth extends ElevationOptions {
+  width: number;
+}
+
+interface ElevationOptionsWidth extends ElevationOptions {
+  width: number;
+}
+
+interface ElevationOptionsRepeatPattern extends ElevationOptions {
+  repeatPattern: number;
 }
 
 export interface Elevation {
@@ -29,83 +49,92 @@ export interface Elevation {
 }
 
 export const generate = (options: GenerateOptions): Elevation => {
-  _validateOptions(options);
+  const { brick, bond, height, numberOfCourses, width, repeatPattern } = options;
+  const brickPalette = createBrickPalette(brick, bond);
 
-  const elevationOptions: ElevationOptions = cloneDeep(options);
-  const verticalGauge = getVerticalGauge(options.brick.height);
-  if (!verticalGauge) {
-    throw new Error(`Vertical gauge not found for brick height ${options.brick.height}`);
+  const elevation: Elevation = {
+    brick,
+    bond,
+    height: 0,
+    width: 0,
+    numberOfCourses: 0,
+    brickPalette,
+    verticalGauge: [],
+    courses: [],
+  };
+
+  const elevationOptions: ElevationOptions = {
+    brick,
+    bond,
+    verticalGauge: [],
+    brickPalette,
+    height,
+    numberOfCourses,
+    width,
+    repeatPattern,
+  };
+
+  // const elevationOptions: ElevationOptions = cloneDeep(options);
+  if (!_getVerticalGauge(elevationOptions)) {
+    return elevation;
   }
 
-  _calculateVertical(elevationOptions, verticalGauge);
   elevationOptions.brickPalette = createBrickPalette(elevationOptions.brick, elevationOptions.bond);
-  _calculateHorizontal(elevationOptions);
 
-  const elevation: Elevation = (elevationOptions as Elevation);
-  checkAllCoursesHaveTheSameWidth(elevation);
+  if (elevationOptions.height) {
+    _calculateVerticalUsingElevationHeight(elevationOptions as ElevationOptionsHeight, elevation);
+  }
+  if (elevationOptions.numberOfCourses) {
+    _calculateVerticalUsingNumberOfCourses(elevationOptions as ElevationOptionsNumberOfCourses, elevation);
+  }
+  if (elevationOptions.width) {
+    _calculateHorizontalUsingElevationWidth(elevation);
+  }
+  if (elevationOptions.repeatPattern) {
+    _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
+  }
+
+  // checkAllCoursesHaveTheSameWidth(elevation);
+
   return elevation;
 }
 
-const _validateOptions = (options: GenerateOptions) => {
-  if (!options.height && !options.numberOfCourses) {
-    throw new Error('You must specify either `height` (mm) or `numberOfCourses`');
+const _getVerticalGauge = (elevationOptions: ElevationOptions): boolean => {
+  elevationOptions.verticalGauge = getVerticalGauge(elevationOptions.brick.height);
+  if (!elevationOptions.verticalGauge) {
+    console.warn(`Vertical gauge not found for brick height ${elevationOptions.brick.height}`);
+    return false;
   }
-  if (!options.repeatPattern && !options.width) {
-    throw new Error('You must specify either `width` (mm) or `repeatPattern`');
-  }
-};
-
-const _calculateVertical = (elevation: ElevationOptions, verticalGauge: Array<VerticalGaugeMark>) => {
-  if (elevation.height) {
-    _calculateVerticalUsingElevationHeight(elevation, verticalGauge);
-    return;
-  }
-  _calculateVerticalUsingNumberOfCourses(elevation, verticalGauge);
+  return true;
 }
 
-const _calculateVerticalUsingElevationHeight = (elevation: ElevationOptions, verticalGauge: Array<VerticalGaugeMark>) => {
-  if (! elevation.height) {
-    return;
-  }
-
+const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptionsHeight, elevation: Elevation) => {
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
-  elevation.verticalGauge = [];
   do {
-    j = i % verticalGauge.length;
-    currentHeight += verticalGauge[j].deltaHeight;
+    j = i % elevationOptions.verticalGauge.length;
+    currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
     if (currentHeight <= elevation.height) {
-      elevation.verticalGauge.push({ ...verticalGauge[j], height: currentHeight });
+      elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
       elevation.numberOfCourses = i;
       i++;
     }
   } while(currentHeight < elevation.height);
 }
 
-const _calculateVerticalUsingNumberOfCourses = (elevation: ElevationOptions, verticalGauge: Array<VerticalGaugeMark>) => {
-  if (! elevation.numberOfCourses) {
-    return;
-  }
-
+const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation) => {
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
+  elevation.numberOfCourses = elevationOptions.numberOfCourses;
   elevation.verticalGauge = [];
-  for (i =0; i < elevation.numberOfCourses; i++) {
-    j = i % verticalGauge.length;
-    currentHeight += verticalGauge[j].deltaHeight;
-    elevation.verticalGauge.push({ ...verticalGauge[j], height: currentHeight });
+  for (i =0; i < elevationOptions.numberOfCourses; i++) {
+    j = i % elevationOptions.verticalGauge.length;
+    currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
+    elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
   }
   elevation.height = currentHeight;
-}
-
-const _calculateHorizontal = (elevation: ElevationOptions) => {
-  if (elevation.width) {
-    _calculateHorizontalUsingElevationWidth(elevation);
-    return;
-  }
-  _calculateHorizontalUsingRepeatPattern(elevation);
 }
 
 const _calculateHorizontalUsingElevationWidth = (elevation: ElevationOptions) => {
@@ -114,18 +143,13 @@ const _calculateHorizontalUsingElevationWidth = (elevation: ElevationOptions) =>
   }
 }
 
-const _calculateHorizontalUsingRepeatPattern = (elevation: ElevationOptions) => {
-  if (! elevation.repeatPattern || ! elevation.verticalGauge || ! elevation.brickPalette) {
-    return;
-  }
-
+const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
   let i: number = 0;
-  elevation.courses = [];
   let width: number = 0;
-  for (i =0; i < elevation.verticalGauge.length; i++) {
+  for (i =0; i < elevationOptions.verticalGauge.length; i++) {
     const pattern: BondPattern = i % 2 ? elevation.bond.pattern.even: elevation.bond.pattern.odd;
-    const course: string = pattern.start + pattern.repeat.repeat(elevation.repeatPattern) + pattern.end;
-    width = calculateWidthFromCourse(course, elevation.brickPalette);
+    const course: string = pattern.start + pattern.repeat.repeat(elevationOptions.repeatPattern) + pattern.end;
+    width = calculateWidthFromCourse(course, elevationOptions.brickPalette);
     elevation.courses.push(course);
   }
   elevation.width = width;
