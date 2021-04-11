@@ -29,10 +29,6 @@ interface ElevationOptionsWidth extends ElevationOptions {
   width: number;
 }
 
-interface ElevationOptionsWidth extends ElevationOptions {
-  width: number;
-}
-
 interface ElevationOptionsRepeatPattern extends ElevationOptions {
   repeatPattern: number;
 }
@@ -43,6 +39,7 @@ export interface Elevation {
   height: number;
   width: number;
   numberOfCourses: number;
+  repeatPattern: number;
   brickPalette: BrickPalette;
   verticalGauge: Array<VerticalGaugeMark>;
   courses: Array<string>;
@@ -57,6 +54,7 @@ export const generate = (options: GenerateOptions): Elevation => {
     bond,
     height: 0,
     width: 0,
+    repeatPattern: 0,
     numberOfCourses: 0,
     brickPalette,
     verticalGauge: [],
@@ -88,7 +86,7 @@ export const generate = (options: GenerateOptions): Elevation => {
     _calculateVerticalUsingNumberOfCourses(elevationOptions as ElevationOptionsNumberOfCourses, elevation);
   }
   if (elevationOptions.width) {
-    _calculateHorizontalUsingElevationWidth(elevation);
+    _calculateHorizontalUsingElevationWidth(elevationOptions as ElevationOptionsWidth, elevation);
   }
   if (elevationOptions.repeatPattern) {
     _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
@@ -115,12 +113,13 @@ const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptio
   do {
     j = i % elevationOptions.verticalGauge.length;
     currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
-    if (currentHeight <= elevation.height) {
+    if (currentHeight <= elevationOptions.height) {
       elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
       elevation.numberOfCourses = i;
+      elevation.height = currentHeight;
       i++;
     }
-  } while(currentHeight < elevation.height);
+  } while(currentHeight < elevationOptions.height);
 }
 
 const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation) => {
@@ -128,7 +127,6 @@ const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptio
   let j: number;
   let currentHeight: number = 0;
   elevation.numberOfCourses = elevationOptions.numberOfCourses;
-  elevation.verticalGauge = [];
   for (i =0; i < elevationOptions.numberOfCourses; i++) {
     j = i % elevationOptions.verticalGauge.length;
     currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
@@ -137,17 +135,31 @@ const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptio
   elevation.height = currentHeight;
 }
 
-const _calculateHorizontalUsingElevationWidth = (elevation: ElevationOptions) => {
-  if (! elevation.height) {
-    return;
-  }
+const _calculateHorizontalUsingElevationWidth = (elevationOptions: ElevationOptionsWidth, elevation: Elevation) => {
+  _calculateRepeatPatternFromWidth(elevationOptions);
+  _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
+}
+
+const _calculateRepeatPatternFromWidth = (elevationOptions: ElevationOptionsWidth) => {
+  let repeatPattern: number = 0;
+  let currentWidth: number = 0;
+  const pattern: BondPattern = elevationOptions.bond.pattern.odd;
+  do {
+    const course: string = pattern.start + pattern.repeat.repeat(repeatPattern) + pattern.end;
+    currentWidth = calculateWidthFromCourse(course, elevationOptions.brickPalette);
+    if (currentWidth <= elevationOptions.width) {
+      elevationOptions.repeatPattern = repeatPattern;
+      repeatPattern++;
+    }
+  } while(currentWidth < elevationOptions.width);
 }
 
 const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+  elevation.repeatPattern = elevationOptions.repeatPattern;
   let i: number = 0;
   let width: number = 0;
   for (i =0; i < elevationOptions.verticalGauge.length; i++) {
-    const pattern: BondPattern = i % 2 ? elevation.bond.pattern.even: elevation.bond.pattern.odd;
+    const pattern: BondPattern = i % 2 ? elevationOptions.bond.pattern.even: elevationOptions.bond.pattern.odd;
     const course: string = pattern.start + pattern.repeat.repeat(elevationOptions.repeatPattern) + pattern.end;
     width = calculateWidthFromCourse(course, elevationOptions.brickPalette);
     elevation.courses.push(course);

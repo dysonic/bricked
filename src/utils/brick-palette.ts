@@ -20,7 +20,7 @@ export const createBrickPalette = (brick: Brick, bond: Bond): BrickPalette => {
     }
 
     const width: number = calculateWidthFromCourse(courseKnown, brickPalette);
-    console.log('width:', width);
+    // console.log('width:', width);
 
     let loop: boolean = _doesExampleHaveUnknownBrick(example, brickPalette)
     while(loop) {
@@ -95,7 +95,7 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
   }
 
   const solveBrick: string = unknown[0];
-  console.log('solve brick:', solveBrick);
+  // console.log('solve brick:', solveBrick);
 
   // Get the number of times each brick is used in the example.
   interface BrickCount {
@@ -111,7 +111,7 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
     acc[b]++;
     return acc;
   }, brickCount);
-  console.log('brick count:', brickCount);
+  // console.log('brick count:', brickCount);
 
   // Subtract mortar thickness.
   const mortarTotal: number = (numberOfBricks - 1) * 10;
@@ -125,6 +125,6 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
   });
 
   const brickWidth: number = width / brickCount[solveBrick];
-  console.log(`brick width (${solveBrick}):`, brickWidth);
+  // console.log(`brick width (${solveBrick}):`, brickWidth);
   brickPalette[solveBrick] = brickWidth;
 };

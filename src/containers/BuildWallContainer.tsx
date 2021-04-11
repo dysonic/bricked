@@ -1,5 +1,7 @@
 import React, { FC } from 'react';
+import { isEmpty } from 'lodash';
 import { BuildWallForm } from '../components/BuildWallForm';
+import { WallTextForm } from '../components/WallTextForm';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick, getWall } from '../redux/selectors';
 import { RootState } from '../redux/types/root-state';
@@ -41,7 +43,8 @@ const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) =
   };
   return (
     <div className="build-wall-form-container row">
-        <BuildWallForm className="col-md-4" brick={brick} onSubmit={handleSubmit}  />
+      <BuildWallForm className="col-md-4" brick={brick} onSubmit={handleSubmit}  />
+      {!isEmpty(wall) && <WallTextForm wall={wall} />}
     </div>
   );
 }

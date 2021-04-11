@@ -58,6 +58,7 @@ export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, onSubmit }) => {
             </div>
             <div className="col-md">
               <input
+                type="text"
                 ref={inputWallLWallLengthEl}
                 id="wall-length"
                 aria-labelledby="length-label"
@@ -76,6 +77,7 @@ export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, onSubmit }) => {
             </div>
             <div className="col-md">
               <input
+                type="text"
                 ref={inputWallLWallHeightEl}
                 id="wall-height"
                 aria-labelledby="height-label"
