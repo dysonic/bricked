@@ -17,19 +17,19 @@ interface ElevationOptions extends GenerateOptions {
   brickPalette: BrickPalette;
 }
 
-interface ElevationOptionsHeight extends ElevationOptions {
+export interface ElevationOptionsHeight extends ElevationOptions {
   height: number;
 }
 
-interface ElevationOptionsNumberOfCourses extends ElevationOptions {
+export interface ElevationOptionsNumberOfCourses extends ElevationOptions {
   numberOfCourses: number;
 }
 
-interface ElevationOptionsWidth extends ElevationOptions {
+export interface ElevationOptionsWidth extends ElevationOptions {
   width: number;
 }
 
-interface ElevationOptionsRepeatPattern extends ElevationOptions {
+export interface ElevationOptionsRepeatPattern extends ElevationOptions {
   repeatPattern: number;
 }
 
@@ -106,7 +106,7 @@ const _getVerticalGauge = (elevationOptions: ElevationOptions): boolean => {
   return true;
 }
 
-const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptionsHeight, elevation: Elevation) => {
+export const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptionsHeight, elevation: Elevation) => {
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
@@ -115,14 +115,14 @@ const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptio
     currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
     if (currentHeight <= elevationOptions.height) {
       elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
-      elevation.numberOfCourses = i;
       elevation.height = currentHeight;
       i++;
     }
   } while(currentHeight < elevationOptions.height);
+  elevation.numberOfCourses = elevation.verticalGauge.length;
 }
 
-const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation) => {
+export const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation) => {
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
@@ -135,7 +135,7 @@ const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptio
   elevation.height = currentHeight;
 }
 
-const _calculateHorizontalUsingElevationWidth = (elevationOptions: ElevationOptionsWidth, elevation: Elevation) => {
+export const _calculateHorizontalUsingElevationWidth = (elevationOptions: ElevationOptionsWidth, elevation: Elevation) => {
   _calculateRepeatPatternFromWidth(elevationOptions);
   _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
 }
@@ -154,24 +154,23 @@ const _calculateRepeatPatternFromWidth = (elevationOptions: ElevationOptionsWidt
   } while(currentWidth < elevationOptions.width);
 }
 
-const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+export const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
   elevation.repeatPattern = elevationOptions.repeatPattern;
   let i: number = 0;
   let width: number = 0;
-  for (i =0; i < elevationOptions.verticalGauge.length; i++) {
-    const pattern: BondPattern = i % 2 ? elevationOptions.bond.pattern.even: elevationOptions.bond.pattern.odd;
+  let oddPattern: boolean = true;
+
+  const getBondPattern = (): BondPattern => {
+    const pattern: BondPattern = oddPattern ? elevationOptions.bond.pattern.odd : elevationOptions.bond.pattern.even;
+    oddPattern = !oddPattern;
+    return pattern;
+  };
+
+  for (i =0; i < elevation.verticalGauge.length; i++) {
+    const pattern: BondPattern = getBondPattern();
     const course: string = pattern.start + pattern.repeat.repeat(elevationOptions.repeatPattern) + pattern.end;
     width = calculateWidthFromCourse(course, elevationOptions.brickPalette);
     elevation.courses.push(course);
   }
   elevation.width = width;
 }
-
-const checkAllCoursesHaveTheSameWidth = (elevation: Elevation) => {
-  const widths = elevation.courses.map(c => {
-    return calculateWidthFromCourse(c, elevation.brickPalette);
-  });
-  if (!widths.every(width => width === elevation.width)) {
-    throw new Error('Not all course widths are the same');
-  }
-};
