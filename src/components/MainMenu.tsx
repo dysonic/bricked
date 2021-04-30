@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import './MainMenu.css';
+import './MainMenu.scss';
 import { Link } from 'react-router-dom';
 
 type MainMenuProps = {}

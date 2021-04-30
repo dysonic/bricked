@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
 import { nanoid } from 'nanoid';
-import './WallWidget.css';
+import './WallWidget.scss';
 import { Elevation } from '../types/elevation';
 import { BrickPalette, getRatios } from '../utils/brick-palette';
 

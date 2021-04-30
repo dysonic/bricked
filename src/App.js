@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import './App.css';
+import './App.scss';
 import { MainMenu } from './components/MainMenu';
 import { Home } from './components/Home';
 import BrickContainer from './containers/BrickContainer';

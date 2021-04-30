@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import './IsoBrick.css';
+import './IsoBrick.scss';
 import { Brick } from '../types/brick';
 
 const ANGLE_RADIANS = 30 / 180 * Math.PI;
