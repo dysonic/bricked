@@ -1,5 +1,5 @@
 import { Brick } from '../../types/brick';
-import { Elevation } from '../../utils/elevation';
+import { Elevation } from '../../types/elevation';
 
 export interface RootState {
   brick: Brick,

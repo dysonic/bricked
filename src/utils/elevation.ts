@@ -1,49 +1,16 @@
-import { Brick } from '../types/brick';
-import { getVerticalGauge, VerticalGaugeMark } from '../constants/coursingCharts';
-import { Bond, BondPattern } from '../constants/bonds';
-import { createBrickPalette, BrickPalette, calculateWidthFromCourse } from './brick-palette';
+import { getVerticalGauge } from '../constants/coursingCharts';
+import { BondPattern } from '../constants/bonds';
+import { createBrickPalette, calculateWidthFromCourse } from './brick-palette';
+import {
+  GenerateOptions,
+  ElevationOptions,
+  ElevationOptionsHeight,
+  ElevationOptionsNumberOfCourses,
+  ElevationOptionsWidth,
+  ElevationOptionsRepeatPattern,
+  Elevation
+} from '../types/elevation';
 
-export interface GenerateOptions {
-  brick: Brick;
-  bond: Bond;
-  height?: number;
-  numberOfCourses?: number;
-  width?: number;
-  repeatPattern?: number;
-}
-
-interface ElevationOptions extends GenerateOptions {
-  verticalGauge: Array<VerticalGaugeMark>;
-  brickPalette: BrickPalette;
-}
-
-export interface ElevationOptionsHeight extends ElevationOptions {
-  height: number;
-}
-
-export interface ElevationOptionsNumberOfCourses extends ElevationOptions {
-  numberOfCourses: number;
-}
-
-export interface ElevationOptionsWidth extends ElevationOptions {
-  width: number;
-}
-
-export interface ElevationOptionsRepeatPattern extends ElevationOptions {
-  repeatPattern: number;
-}
-
-export interface Elevation {
-  brick: Brick;
-  bond: Bond;
-  height: number;
-  width: number;
-  numberOfCourses: number;
-  repeatPattern: number;
-  brickPalette: BrickPalette;
-  verticalGauge: Array<VerticalGaugeMark>;
-  courses: Array<string>;
-}
 
 export const generate = (options: GenerateOptions): Elevation => {
   const { brick, bond, height, numberOfCourses, width, repeatPattern } = options;

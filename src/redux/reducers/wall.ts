@@ -1,16 +1,31 @@
-import { Elevation } from '../../utils/elevation';
+import { Elevation } from '../../types/elevation';
 import {
   GENERATE_WALL,
   WallActionTypes,
 } from '../types/wall';
 import { generate } from '../../utils/elevation';
 
-const wallReducer = (state = {}, action: WallActionTypes) => {
+const LOCAL_STORAGE_KEY = 'wall';
+
+const wallJsonString:string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
+let wall:Elevation | null = null;
+if (wallJsonString) {
+  wall = JSON.parse(wallJsonString);
+}
+
+const initialState = wall;
+
+const saveWall = (newState:Elevation): void => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
+};
+
+const wallReducer = (state = initialState, action: WallActionTypes) => {
   console.log('action.type', action.type);
   switch (action.type) {
     case GENERATE_WALL: {
       const wall: Elevation = generate(action.options);
       const newState = { ...wall };
+      saveWall(newState);
       return newState;
     }
     default: {

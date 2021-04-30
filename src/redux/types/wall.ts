@@ -1,4 +1,4 @@
-import { GenerateOptions } from '../../utils/elevation';
+import { GenerateOptions } from '../../types/elevation';
 
 export const GENERATE_WALL = 'GENERATE_WALL';
 

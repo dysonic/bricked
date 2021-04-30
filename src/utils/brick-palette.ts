@@ -128,3 +128,28 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
   // console.log(`brick width (${solveBrick}):`, brickWidth);
   brickPalette[solveBrick] = brickWidth;
 };
+
+export const getRatios = (brickPalette: BrickPalette): BrickPalette => {
+  const shortestBrick: string = _getShortestBrick(brickPalette);
+  const ratios: BrickPalette = {
+    [shortestBrick]: 1,
+  };
+  const shortestWidth = brickPalette[shortestBrick];
+  Object.keys(brickPalette)
+    .filter((brickLetter: string) => brickLetter !== shortestBrick)
+    .forEach((brickLetter: string) => ratios[brickLetter] = brickPalette[brickLetter] / shortestWidth);
+
+  return ratios;
+};
+
+export const _getShortestBrick = (brickPalette: BrickPalette): string => {
+  return Object.keys(brickPalette).reduce((acc: string, brickLetter: string): string => {
+    if (!acc) {
+      return brickLetter;
+    }
+    if (brickPalette[brickLetter] < brickPalette[acc]) {
+      acc = brickLetter;
+    }
+    return acc;
+  }, '');
+};

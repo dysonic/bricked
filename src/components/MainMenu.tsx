@@ -11,7 +11,8 @@ export const MainMenu: FC<MainMenuProps> = () => {
       <Link to="/brick">Brick Dimension</Link>
       <Link to="/coursing-chart">Coursing Chart</Link>
       <Link to="/brickwork">Brickwork</Link>
-      <Link to="/buildwall">Build Wall</Link>
+      <Link to="/build-wall">Build Wall</Link>
+      <Link to="/edit-wall">Edit Wall</Link>
     </nav>
   );
 };

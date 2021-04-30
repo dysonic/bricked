@@ -11,6 +11,7 @@ import BrickContainer from './containers/BrickContainer';
 import CoursingChartContainer from './containers/CoursingChartContainer';
 import BrickworkContainer from './containers/BrickworkContainer';
 import BuildWallContainer from './containers/BuildWallContainer';
+import EditWallContainer from './containers/EditWallContainer';
 
 function App() {
   return (
@@ -41,8 +42,11 @@ function App() {
                 <Route path="/brickwork">
                   <BrickworkContainer />
                 </Route>
-                <Route path="/buildwall">
+                <Route path="/build-wall">
                   <BuildWallContainer />
+                </Route>
+                <Route path="/edit-wall">
+                  <EditWallContainer />
                 </Route>
             </Switch>
           </main>

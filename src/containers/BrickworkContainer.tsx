@@ -4,7 +4,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
 import { RootState } from '../redux/types/root-state';
 import { bonds, Bond } from '../constants/bonds';
-import { generate, GenerateOptions } from '../utils/elevation';
+import { generate } from '../utils/elevation';
+import { GenerateOptions } from '../types/elevation';
 import { Brick } from '../types/brick';
 
 const generateElevations = (bonds: Array<Bond>, brick: Brick) => {

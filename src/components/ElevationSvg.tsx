@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { Elevation } from '../utils/elevation';
+import { Elevation } from '../types/elevation';
 import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../constants';
 
 const drawBrickAndReturnNewX = (b: string, elevation: Elevation, x:number, y:number, svgContainer: SVGSVGElement): number => {

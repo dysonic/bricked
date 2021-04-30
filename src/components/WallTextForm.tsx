@@ -1,5 +1,5 @@
 import React, { FC }  from 'react';
-import { Elevation } from '../utils/elevation';
+import { Elevation } from '../types/elevation';
 
 const ROWS_BUFFER: number = 5;
 const COLS_BUFFER: number = 10;

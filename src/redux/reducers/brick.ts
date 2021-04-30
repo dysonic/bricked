@@ -12,7 +12,7 @@ const brickJsonString:string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
 const brick:Brick = brickJsonString ? JSON.parse(brickJsonString) : { width: 0, length: 0, height: 0 };
 const initialState = brick;
 
-const saveBrick = (newState:Brick) => {
+const saveBrick = (newState:Brick): void => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
 };
 
