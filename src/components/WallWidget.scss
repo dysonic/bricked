@@ -12,6 +12,8 @@ $wiki_queen_closer_border: #efd9dd;
 
   ul {
     list-style: none;
+    margin: 0;
+    padding-left: 0;
 
     .wall-widget__row {
       border-top: 1px grey dotted;
@@ -23,11 +25,13 @@ $wiki_queen_closer_border: #efd9dd;
 
       .wall-widget__course {
         display: flex;
+        flex-wrap: wrap;
+        align-content: space-between;
         margin: 0.5em 1em 0.5em 0;
-        margin-bottom: 0.5em;
 
         .wall-widget__brick {
           text-align: center;
+          margin-bottom: 0.5em;
 
           border: solid 1px transparent;
 

@@ -48,7 +48,7 @@ const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) =
 
   return (
     <div className="build-wall-form-container row">
-      <BuildWallForm className="col-md-4" brick={brick} onSubmit={handleSubmit}  />
+      <BuildWallForm className="col-md-4" brick={brick} onSubmit={handleSubmit} />
     </div>
   );
 }

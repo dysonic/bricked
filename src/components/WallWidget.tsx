@@ -65,7 +65,7 @@ const renderCourse = (course: Course): JSX.Element => {
 
   return (
     <div>
-      <p className="wall-widget__course-stats">#{course.n} {course.height}mm</p>
+      <p className="wall-widget__course-stats"><small>#{course.n} {course.height}mm</small></p>
       <div className="wall-widget__course">{brickItems}</div>
     </div>
   );

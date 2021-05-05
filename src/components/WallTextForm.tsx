@@ -16,21 +16,19 @@ export const WallTextForm: FC<WallTextFormProps> = ({ wall }) => {
   const coursesAsStrings: Array<string> = courses.map((course: Course) => {
     return course.bricks.map((brick: Brick) => brick.letter).join('');
   });
+  console.log('coursesAsStrings:', coursesAsStrings);
   const rows = coursesAsStrings.length + ROWS_BUFFER;
-  const maxCourseLength = coursesAsStrings.reduce((acc: number, course:string) => Math.max(acc, course.length), 0);
+  const maxCourseLength = coursesAsStrings.reduce((acc: number, course: string): number => Math.max(acc, course.length), 0);
   const cols = maxCourseLength + COLS_BUFFER;
 
-  const coursesText: string = courses.join('\n');
+  const coursesText: string = coursesAsStrings.join('\n');
 
   return (
-    <div className="wall-text-form col-sm-4">
+    <div className="wall-text-form col-sm">
       <form>
         <fieldset>
           <legend>Courses:</legend>
           <div className="row">
-            <div className="col-md-6">
-              <label id="length-label">Length (mm)</label>
-            </div>
             <div className="col-md">
               <textarea
                 id="wall-courses"
@@ -46,7 +44,7 @@ export const WallTextForm: FC<WallTextFormProps> = ({ wall }) => {
             </div>
           </div>
           <div className="row">
-            <div className="col-md">
+            <div className="col-sm">
               {/* <button type="button" onClick={validate}>Build</button> */}
             </div>
           </div>
