@@ -1,5 +1,4 @@
 export interface Brick {
-  length:number; // mm
-  width:number; // mm
-  height:number; // mm
+  id: string;
+  letter: string;
 }

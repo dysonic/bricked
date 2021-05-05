@@ -6,18 +6,24 @@ import { RootState } from '../redux/types/root-state';
 import { bonds, Bond } from '../constants/bonds';
 import { generate } from '../utils/elevation';
 import { GenerateOptions } from '../types/elevation';
-import { Brick } from '../types/brick';
+import { BrickDimension } from '../types/brick-dimension';
+import { Elevation } from '../types/elevation';
 
-const generateElevations = (bonds: Array<Bond>, brick: Brick) => {
-  return bonds.map(bond => {
+const generateElevations = (bonds: Array<Bond>, brick: BrickDimension): Array<Elevation> => {
+  const elevations: Array<Elevation> = [];
+  bonds.forEach((bond: Bond) => {
     const options: GenerateOptions = {
       brick,
       bond,
       numberOfCourses: 4,
       repeatPattern: 2,
     };
-    return generate(options);
+    const elevation: Elevation | null = generate(options);
+    if (elevation) {
+      elevations.push(elevation);
+    }
   });
+  return elevations;
 };
 
 const mapState = (state: RootState) => {

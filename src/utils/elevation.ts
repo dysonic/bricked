@@ -1,4 +1,4 @@
-import { getVerticalGauge } from '../constants/coursingCharts';
+import { findCoursingChartForBrickHeight, getDeltaHeights } from '../utils/coursing-chart';
 import { BondPattern } from '../constants/bonds';
 import { createBrickPalette, calculateWidthFromCourse } from './brick-palette';
 import {
@@ -10,41 +10,42 @@ import {
   ElevationOptionsRepeatPattern,
   Elevation
 } from '../types/elevation';
+import { CoursingChart } from '../types/coursing-chart';
+import { Course } from '../types/course';
+import { createBrick, createCourse } from './factories';
 
-
-export const generate = (options: GenerateOptions): Elevation => {
+export const generate = (options: GenerateOptions): Elevation | null => {
   const { brick, bond, height, numberOfCourses, width, repeatPattern } = options;
+
+  const coursingChart: CoursingChart | undefined = findCoursingChartForBrickHeight(brick.height);
+  if (!coursingChart) {
+    return null;
+  }
+
   const brickPalette = createBrickPalette(brick, bond);
 
   const elevation: Elevation = {
-    brick,
+    brickDimension: brick,
     bond,
     height: 0,
     width: 0,
     repeatPattern: 0,
     numberOfCourses: 0,
     brickPalette,
-    verticalGauge: [],
+    coursingChart,
     courses: [],
   };
 
   const elevationOptions: ElevationOptions = {
     brick,
     bond,
-    verticalGauge: [],
     brickPalette,
+    coursingChart,
     height,
     numberOfCourses,
     width,
     repeatPattern,
   };
-
-  // const elevationOptions: ElevationOptions = cloneDeep(options);
-  if (!_getVerticalGauge(elevationOptions)) {
-    return elevation;
-  }
-
-  elevationOptions.brickPalette = createBrickPalette(elevationOptions.brick, elevationOptions.bond);
 
   if (elevationOptions.height) {
     _calculateVerticalUsingElevationHeight(elevationOptions as ElevationOptionsHeight, elevation);
@@ -59,55 +60,50 @@ export const generate = (options: GenerateOptions): Elevation => {
     _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
   }
 
-  // checkAllCoursesHaveTheSameWidth(elevation);
-
   return elevation;
-}
+};
 
-const _getVerticalGauge = (elevationOptions: ElevationOptions): boolean => {
-  elevationOptions.verticalGauge = getVerticalGauge(elevationOptions.brick.height);
-  if (!elevationOptions.verticalGauge) {
-    console.warn(`Vertical gauge not found for brick height ${elevationOptions.brick.height}`);
-    return false;
-  }
-  return true;
-}
-
-export const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptionsHeight, elevation: Elevation) => {
+export const _calculateVerticalUsingElevationHeight = (elevationOptions: ElevationOptionsHeight, elevation: Elevation): void => {
+  const { coursingChart, height } = elevationOptions;
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
-  do {
-    j = i % elevationOptions.verticalGauge.length;
-    currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
-    if (currentHeight <= elevationOptions.height) {
-      elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
+  const deltaHeights = getDeltaHeights(coursingChart);
+  const dhl = deltaHeights.length;
+  while (currentHeight < height) {
+    j = i % dhl;
+    currentHeight += deltaHeights[j];
+    if (currentHeight <= height) {
+      elevation.courses.push(createCourse(currentHeight, i+1));
       elevation.height = currentHeight;
       i++;
     }
-  } while(currentHeight < elevationOptions.height);
-  elevation.numberOfCourses = elevation.verticalGauge.length;
-}
+  }
+  elevation.numberOfCourses = elevation.courses.length;
+};
 
-export const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation) => {
+export const _calculateVerticalUsingNumberOfCourses = (elevationOptions: ElevationOptionsNumberOfCourses, elevation: Elevation): void => {
+  const { coursingChart, numberOfCourses } = elevationOptions;
   let i: number = 0;
   let j: number;
   let currentHeight: number = 0;
-  elevation.numberOfCourses = elevationOptions.numberOfCourses;
-  for (i =0; i < elevationOptions.numberOfCourses; i++) {
-    j = i % elevationOptions.verticalGauge.length;
-    currentHeight += elevationOptions.verticalGauge[j].deltaHeight;
-    elevation.verticalGauge.push({ ...elevationOptions.verticalGauge[j], height: currentHeight });
+  elevation.numberOfCourses = numberOfCourses;
+  const deltaHeights = getDeltaHeights(coursingChart);
+  const dhl = deltaHeights.length;
+  for (i =0; i < numberOfCourses; i++) {
+    j = i % dhl;
+    currentHeight += deltaHeights[j];
+    elevation.courses.push(createCourse(currentHeight, i+1));
   }
   elevation.height = currentHeight;
-}
+};
 
-export const _calculateHorizontalUsingElevationWidth = (elevationOptions: ElevationOptionsWidth, elevation: Elevation) => {
+export const _calculateHorizontalUsingElevationWidth = (elevationOptions: ElevationOptionsWidth, elevation: Elevation): void => {
   _calculateRepeatPatternFromWidth(elevationOptions);
   _calculateHorizontalUsingRepeatPattern(elevationOptions as ElevationOptionsRepeatPattern, elevation);
-}
+};
 
-const _calculateRepeatPatternFromWidth = (elevationOptions: ElevationOptionsWidth) => {
+export const _calculateRepeatPatternFromWidth = (elevationOptions: ElevationOptionsWidth) => {
   let repeatPattern: number = 0;
   let currentWidth: number = 0;
   const pattern: BondPattern = elevationOptions.bond.pattern.odd;
@@ -119,25 +115,25 @@ const _calculateRepeatPatternFromWidth = (elevationOptions: ElevationOptionsWidt
       repeatPattern++;
     }
   } while(currentWidth < elevationOptions.width);
-}
+};
 
-export const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+export const _calculateHorizontalUsingRepeatPattern = (elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation): void => {
   elevation.repeatPattern = elevationOptions.repeatPattern;
-  let i: number = 0;
-  let width: number = 0;
-  let oddPattern: boolean = true;
 
+  const { courses } = elevation;
+
+  let oddPattern: boolean = true;
   const getBondPattern = (): BondPattern => {
     const pattern: BondPattern = oddPattern ? elevationOptions.bond.pattern.odd : elevationOptions.bond.pattern.even;
     oddPattern = !oddPattern;
     return pattern;
   };
 
-  for (i =0; i < elevation.verticalGauge.length; i++) {
+  let bricksAsText: string = '';
+  courses.forEach((course: Course) => {
     const pattern: BondPattern = getBondPattern();
-    const course: string = pattern.start + pattern.repeat.repeat(elevationOptions.repeatPattern) + pattern.end;
-    width = calculateWidthFromCourse(course, elevationOptions.brickPalette);
-    elevation.courses.push(course);
-  }
-  elevation.width = width;
-}
+    bricksAsText = pattern.start + pattern.repeat.repeat(elevationOptions.repeatPattern) + pattern.end;
+    course.bricks = bricksAsText.split('').map((brickLetter: string) => createBrick(brickLetter));
+  });
+  elevation.width = calculateWidthFromCourse(bricksAsText, elevationOptions.brickPalette);
+};

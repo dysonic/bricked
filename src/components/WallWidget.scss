@@ -1,9 +1,51 @@
+// https://en.wikipedia.org/wiki/Brickwork
+$wiki_stretcher: #dc905c;
+$wiki_stretcher_border:#f6c2a7;
+$wiki_header: #a87d5d;
+$wiki_header_border: #cba390;
+$wiki_queen_closer: #bd9da2;
+$wiki_queen_closer_border: #efd9dd;
+
+
 .wall-widget {
+  overflow-x: scroll;
+
   ul {
     list-style: none;
-    li {
-      span.brick {
-        border: 1px black solid;
+
+    .wall-widget__row {
+      border-top: 1px grey dotted;
+      margin-bottom: 1em;
+
+      .wall-widget__course-stats {
+        margin: 0 1em 0.2em 0;
+      }
+
+      .wall-widget__course {
+        display: flex;
+        margin: 0.5em 1em 0.5em 0;
+        margin-bottom: 0.5em;
+
+        .wall-widget__brick {
+          text-align: center;
+
+          border: solid 1px transparent;
+
+          &.wall-widget__brick--h {
+            background-color: $wiki_header;
+            border-color: $wiki_header_border;
+          }
+
+          &.wall-widget__brick--s {
+            background-color: $wiki_stretcher;
+            border-color: $wiki_stretcher_border;
+          }
+
+          &.wall-widget__brick--q {
+            background-color: $wiki_queen_closer;
+            border-color: $wiki_queen_closer_border;
+          }
+        }
       }
     }
   }

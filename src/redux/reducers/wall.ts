@@ -23,10 +23,13 @@ const wallReducer = (state = initialState, action: WallActionTypes) => {
   console.log('action.type', action.type);
   switch (action.type) {
     case GENERATE_WALL: {
-      const wall: Elevation = generate(action.options);
-      const newState = { ...wall };
-      saveWall(newState);
-      return newState;
+      const wall: Elevation | null = generate(action.options);
+      if (wall) {
+        const newState = { ...wall };
+        saveWall(newState);
+        return newState;
+      }
+      return state;
     }
     default: {
       return state;

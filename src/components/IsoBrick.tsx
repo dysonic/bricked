@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import './IsoBrick.scss';
-import { Brick } from '../types/brick';
+import { BrickDimension } from '../types/brick-dimension';
 
 const ANGLE_RADIANS = 30 / 180 * Math.PI;
 
@@ -38,7 +38,7 @@ const lineAttrs = (points: Point[]): LineAttributes => {
   }, attrs);
 };
 
-type IsoBrickProps = { brick: Brick };
+type IsoBrickProps = { brick: BrickDimension };
 export const IsoBrick: FC<IsoBrickProps> = ({ brick }) => {
   const { width, height, length } = brick;
   console.log('width:', width, 'height:', height, 'length:', length);

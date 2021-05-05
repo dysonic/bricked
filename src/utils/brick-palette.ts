@@ -1,11 +1,13 @@
-import { Brick } from '../types/brick';
+import { BrickDimension } from '../types/brick-dimension';
 import { Bond } from '../constants/bonds';
+import { StringNumber } from '../types/common';
+import { MORTAR_THICKNESS } from '../constants';
+import { Elevation } from '../types/elevation';
 
-export interface BrickPalette {
-  [index: string]: number;
+export interface BrickPalette extends StringNumber {
 }
 
-export const createBrickPalette = (brick: Brick, bond: Bond): BrickPalette => {
+export const createBrickPalette = (brick: BrickDimension, bond: Bond): BrickPalette => {
   const example: string[] = [ bond.example.odd, bond.example.even ];
   const brickPalette: BrickPalette = {
     s: brick.length,
@@ -81,7 +83,7 @@ export const calculateWidthFromCourse = (course: string, brickPalette: BrickPale
     throw new Error(`Brick found (${b}) that does not exist is brickPalette`);
   });
   const brickTotal: number = brickWidths.reduce((acc, w) => acc + w);
-  const mortarTotal: number = (numberOfBricks - 1) * 10;
+  const mortarTotal: number = (numberOfBricks - 1) * MORTAR_THICKNESS;
   const width: number = brickTotal + mortarTotal;
   return width;
 }
@@ -114,7 +116,7 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
   // console.log('brick count:', brickCount);
 
   // Subtract mortar thickness.
-  const mortarTotal: number = (numberOfBricks - 1) * 10;
+  const mortarTotal: number = (numberOfBricks - 1) * MORTAR_THICKNESS;
   width = width - mortarTotal;
 
   // Subtract known bricks
@@ -129,27 +131,27 @@ const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, widt
   brickPalette[solveBrick] = brickWidth;
 };
 
-export const getRatios = (brickPalette: BrickPalette): BrickPalette => {
-  const shortestBrick: string = _getShortestBrick(brickPalette);
-  const ratios: BrickPalette = {
-    [shortestBrick]: 1,
-  };
-  const shortestWidth = brickPalette[shortestBrick];
-  Object.keys(brickPalette)
-    .filter((brickLetter: string) => brickLetter !== shortestBrick)
-    .forEach((brickLetter: string) => ratios[brickLetter] = brickPalette[brickLetter] / shortestWidth);
+export interface BrickRatio {
+  height: number;
+  brickPalette: BrickPalette;
+}
 
-  return ratios;
+export const getRatios = (wall: Elevation): BrickRatio => {
+  const brickRatio: BrickRatio = {
+    height: 0,
+    brickPalette: {},
+  };
+  const d = _getShortestDimension(wall.brickPalette, wall.brickDimension.height);
+  brickRatio.height = wall.brickDimension.height / d;
+  Object.entries(wall.brickPalette).forEach(([brickLetter, width]) => {
+    brickRatio.brickPalette[brickLetter] = width / d;
+  });
+  return brickRatio;
 };
 
-export const _getShortestBrick = (brickPalette: BrickPalette): string => {
-  return Object.keys(brickPalette).reduce((acc: string, brickLetter: string): string => {
-    if (!acc) {
-      return brickLetter;
-    }
-    if (brickPalette[brickLetter] < brickPalette[acc]) {
-      acc = brickLetter;
-    }
-    return acc;
-  }, '');
+export const _getShortestDimension = (brickPalette: BrickPalette, brickHeight: number): number => {
+  const dimensions = Object.values(brickPalette).concat([brickHeight]);
+  return dimensions.reduce((acc: number, d: number): number => {
+    return Math.min(acc, d);
+  }, 999);
 };

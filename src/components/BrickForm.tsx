@@ -1,10 +1,10 @@
 import React, { FC, useState }  from 'react';
-import { Brick } from '../types/brick';
+import { BrickDimension } from '../types/brick-dimension';
 import getNumeric from '../utils/get-numeric';
 
 type BrickFormProps = {
   className?: string,
-  brick: Brick
+  brick: BrickDimension
   updateBrickLength: Function,
   updateBrickWidth: Function,
   updateBrickHeight: Function,

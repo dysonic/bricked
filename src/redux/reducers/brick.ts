@@ -4,15 +4,15 @@ import {
   UPDATE_BRICK_HEIGHT,
   BrickActionTypes,
 } from '../types/brick';
-import { Brick } from '../../types/brick';
+import { BrickDimension } from '../../types/brick-dimension';
 
 const LOCAL_STORAGE_KEY = 'brick';
 
-const brickJsonString:string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
-const brick:Brick = brickJsonString ? JSON.parse(brickJsonString) : { width: 0, length: 0, height: 0 };
+const brickJsonString: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
+const brick: BrickDimension = brickJsonString ? JSON.parse(brickJsonString) : { width: 0, length: 0, height: 0 };
 const initialState = brick;
 
-const saveBrick = (newState:Brick): void => {
+const saveBrick = (newState: BrickDimension): void => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
 };
 

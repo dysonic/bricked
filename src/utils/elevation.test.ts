@@ -1,18 +1,27 @@
+/* eslint-disable import/first */
+// jest.mock('./elevation', () => ({
+//   _calculateRepeatPatternFromWidth: jest.fn(),
+//   _calculateHorizontalUsingRepeatPattern: jest.fn(),
+// }));
+
 import {
   _calculateVerticalUsingElevationHeight,
   _calculateVerticalUsingNumberOfCourses,
   _calculateHorizontalUsingRepeatPattern,
   _calculateHorizontalUsingElevationWidth,
+  _calculateRepeatPatternFromWidth,
+} from './elevation';
+import {
   ElevationOptionsHeight,
   ElevationOptionsNumberOfCourses,
   ElevationOptionsRepeatPattern,
   ElevationOptionsWidth,
   Elevation,
-} from './elevation'
+} from '../types/elevation'
 import { Brick } from '../types/brick';
 import { BrickPalette, calculateWidthFromCourse } from './brick-palette';
 import { DOUBLE_FLEMISH_BOND as bond } from '../constants/bonds';
-import { getVerticalGauge } from '../constants/coursingCharts';
+import { getVerticalGauge } from '../constants/coursing-charts';
 
 const brick: Brick = {
   width: 110,
@@ -144,6 +153,9 @@ test('_calculateHorizontalUsingRepeatPattern function', () => {
   _calculateHorizontalUsingRepeatPattern(elevationOptions, elevation);
 
   expect(elevation.courses.length).toBe(11);
+
+  // odd: 'sh' + n * 'sh' +  's';
+  // even: 'hqs' + n * 'hs' +  'qh';
   expect(elevation.courses).toEqual([
     'shshshs',
     'hqshshsqh',
@@ -163,7 +175,74 @@ test('_calculateHorizontalUsingRepeatPattern function', () => {
 });
 
 
-test('_calculateHorizontalUsingElevationWidth function', () => {
+test.only('_calculateHorizontalUsingElevationWidth function', () => {
+  // const _calculateRepeatPatternFromWidthMock = _calculateRepeatPatternFromWidth as jest.Mock;
+  // const _calculateHorizontalUsingRepeatPatternMock = _calculateHorizontalUsingRepeatPattern as jest.Mock;
+
+  // _calculateRepeatPatternFromWidthMock
+  //   .mockImplementationOnce((elevationOptions: ElevationOptionsWidth) => {
+  //     console.log('foo');
+  //     elevationOptions.repeatPattern = 100;
+  //     console.log('_calculateRepeatPatternFromWidthMock - elevationOptions:', elevationOptions);
+  //   });
+
+  // _calculateHorizontalUsingRepeatPatternMock
+  //   .mockImplementationOnce((elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+  //     console.log('bar');
+  //   });
+
+  const elevationOptions:ElevationOptionsWidth = {
+    brick,
+    bond,
+    verticalGauge: getVerticalGauge(brick.height),
+    brickPalette,
+    height: 1000,
+    width: 1000,
+  };
+
+  const elevation = createElevation();
+
+  const expectedElevationOptionsOne = {
+    ...elevation,
+  };
+  const expectedElevationOptionsTwo = {
+    ...elevation,
+    repeatPattern: 100,
+  };
+
+
+  // expect(_calculateRepeatPatternFromWidthMock).toBeCalledWith(expectedElevationOptionsOne);
+
+
+  // expect(_calculateHorizontalUsingRepeatPatternMock). toHaveBeenCalledBefore(_calculateHorizontalUsingRepeatPattern);
+
+  _calculateHorizontalUsingElevationWidth(elevationOptions, elevation);
+
+  // expect(elevation.courses.length).toBe(11);
+  // expect(elevation.courses).toEqual([
+  //   'shshshs',
+  //   'hqshshsqh',
+  //   'shshshs',
+  //   'hqshshsqh',
+  //   'shshshs',
+  //   'hqshshsqh',
+  //   'shshshs',
+  //   'hqshshsqh',
+  //   'shshshs',
+  //   'hqshshsqh',
+  //   'shshshs',
+  // ]);
+  // expect(elevation.width).toBe(1310);
+
+  // expectAllElevationCoursesHaveTheSameWidth(elevation);
+});
+
+test('xxx_calculateHorizontalUsingElevationWidth function', () => {
+  (_calculateHorizontalUsingRepeatPattern as jest.Mock)
+    .mockImplementationOnce((elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+
+    });
+
   const elevationOptions:ElevationOptionsWidth = {
     brick,
     bond,

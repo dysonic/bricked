@@ -1,5 +1,5 @@
 import React, { FC, useState, useRef }  from 'react';
-import { Brick } from '../types/brick';
+import { BrickDimension } from '../types/brick-dimension';
 import getNumeric from '../utils/get-numeric';
 import { bonds } from '../constants/bonds';
 
@@ -19,7 +19,7 @@ const validateNumber = (value:string | undefined, input:any):boolean => {
 
 type BuildWallFormProps = {
   className?: string,
-  brick: Brick,
+  brick: BrickDimension,
   onSubmit: Function,
 };
 export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, onSubmit }) => {

@@ -31,9 +31,12 @@ const EditWallContainer: FC<PropsFromRedux> = ({ brick, wall }) => {
 
   return (
     <div>
-      <div className="button-group">
-        <button className={getActiveClass(context, CONTEXT_WIDGET)} onClick={(e: any) => setContext(CONTEXT_WIDGET)}>Widget</button>
-        <button className={getActiveClass(context, CONTEXT_SOURCE)} onClick={(e: any) => setContext(CONTEXT_SOURCE)}>Source</button>
+      <div className="row">
+        <div className="col-sm-4"></div>
+          <div className="button-group">
+            <button className={getActiveClass(context, CONTEXT_WIDGET)} onClick={(e: any) => setContext(CONTEXT_WIDGET)}>Widget</button>
+            <button className={getActiveClass(context, CONTEXT_SOURCE)} onClick={(e: any) => setContext(CONTEXT_SOURCE)}>Source</button>
+          </div>
       </div>
       <div>
         {isWidgetContext() && <WallWidget wall={wall} />}

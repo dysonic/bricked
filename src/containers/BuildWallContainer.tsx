@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { useHistory } from "react-router-dom";
-import { isEmpty } from 'lodash';
 import { BuildWallForm } from '../components/BuildWallForm';
 import { WallTextForm } from '../components/WallTextForm';
 import { connect, ConnectedProps } from 'react-redux';
@@ -44,7 +43,7 @@ const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) =
     };
     generateWall(options);
 
-    history.push("/edit-wall");
+    history.push('/edit-wall');
   };
 
   return (

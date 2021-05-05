@@ -1,8 +1,18 @@
 import {
-  _getShortestBrick,
+  _getShortestDimension,
   getRatios,
   BrickPalette,
-} from './brick-palette'
+  BrickRatio,
+} from './brick-palette';
+import { Elevation } from '../types/elevation';
+import { Brick } from '../types/brick';
+import { DOUBLE_FLEMISH_BOND as bond } from '../constants/bonds';
+
+const brick: Brick = {
+  length: 230,
+  width: 110,
+  height: 76,
+};
 
 const brickPalette: BrickPalette = {
   h: 110,
@@ -10,18 +20,33 @@ const brickPalette: BrickPalette = {
   q: 50,
 };
 
-test('_getShortestBrick function', () => {
-  const shortestBrick: string = _getShortestBrick(brickPalette);
+test('_getShortestDimension function', () => {
+  const d: number = _getShortestDimension(brickPalette, brick.height);
 
-  expect(shortestBrick).toBe('q');
+  expect(d).toBe(50);
 });
 
 test('getRatios function', () => {
-  const ratios: BrickPalette = getRatios(brickPalette);
+  const elevation: Elevation = {
+    brick,
+    bond,
+    height: 0,
+    width: 0,
+    repeatPattern: 0,
+    numberOfCourses: 0,
+    brickPalette,
+    verticalGauge: [],
+    courses: [],
+  };
 
-  expect(ratios).toEqual({
-    h: 2.2,
-    s: 4.6,
-    q: 1,
+  const brickRatio: BrickRatio = getRatios(elevation);
+
+  expect(brickRatio).toEqual({
+    height: 1.52,
+    brickPalette: {
+      h: 2.2,
+      s: 4.6,
+      q: 1,
+    },
   });
 });

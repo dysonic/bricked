@@ -1,10 +1,11 @@
-import { Brick } from './brick';
+import { BrickDimension } from './brick-dimension';
 import { Bond } from '../constants/bonds';
 import { BrickPalette } from '../utils/brick-palette';
-import { VerticalGaugeMark } from '../constants/coursingCharts';
+import { CoursingChart } from '../types/coursing-chart';
+import { Course } from './course';
 
 export interface GenerateOptions {
-  brick: Brick;
+  brick: BrickDimension;
   bond: Bond;
   height?: number;
   numberOfCourses?: number;
@@ -13,7 +14,7 @@ export interface GenerateOptions {
 }
 
 export interface ElevationOptions extends GenerateOptions {
-  verticalGauge: Array<VerticalGaugeMark>;
+  coursingChart: CoursingChart;
   brickPalette: BrickPalette;
 }
 
@@ -34,13 +35,13 @@ export interface ElevationOptionsRepeatPattern extends ElevationOptions {
 }
 
 export interface Elevation {
-  brick: Brick;
+  brickDimension: BrickDimension;
   bond: Bond;
   height: number;
   width: number;
   numberOfCourses: number;
   repeatPattern: number;
   brickPalette: BrickPalette;
-  verticalGauge: Array<VerticalGaugeMark>;
-  courses: Array<string>;
+  coursingChart: CoursingChart;
+  courses: Array<Course>;
 }
