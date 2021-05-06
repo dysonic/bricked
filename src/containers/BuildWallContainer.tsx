@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { useHistory } from "react-router-dom";
 import { BuildWallForm } from '../components/BuildWallForm';
-import { WallTextForm } from '../components/WallTextForm';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick, getWall } from '../redux/selectors';
 import { RootState } from '../redux/types/root-state';

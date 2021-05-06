@@ -8,7 +8,10 @@ $wiki_queen_closer_border: #efd9dd;
 
 
 .wall-widget {
-  overflow-x: scroll;
+
+  .wall-widget__controls {
+    margin-bottom: 1em;
+  }
 
   ul {
     list-style: none;
@@ -49,6 +52,27 @@ $wiki_queen_closer_border: #efd9dd;
             background-color: $wiki_queen_closer;
             border-color: $wiki_queen_closer_border;
           }
+        }
+      }
+    }
+  }
+
+  &.wall-widget--collapse-rows {
+    .wall-widget__row {
+      padding: 0;
+      margin: 0;
+      border-top: none;
+
+      .wall-widget__course-stats {
+        display: none;
+      }
+
+      .wall-widget__course  {
+        flex-wrap: nowrap;
+        margin: 0;
+
+        .wall-widget__brick {
+          margin-bottom: 0;
         }
       }
     }
