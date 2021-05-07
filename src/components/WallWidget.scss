@@ -6,6 +6,7 @@ $wiki_header_border: #cba390;
 $wiki_queen_closer: #bd9da2;
 $wiki_queen_closer_border: #efd9dd;
 
+$active: blue;
 
 .wall-widget {
 
@@ -51,6 +52,11 @@ $wiki_queen_closer_border: #efd9dd;
           &.wall-widget__brick--q {
             background-color: $wiki_queen_closer;
             border-color: $wiki_queen_closer_border;
+          }
+
+          &.wall-widget__brick--active {
+            border-color: $active;
+            background-color: $active;
           }
         }
       }

@@ -1,9 +1,10 @@
 import React, { FC, useRef, useState } from 'react';
 import './WallWidget.scss';
 import { Elevation } from '../types/elevation';
-import { Course } from '../types/course';
 import { Brick } from '../types/brick';
 import { BrickRatio, getRatios } from '../utils/brick-palette';
+import { getCourseHeight } from '../utils/coursing-chart';
+import { CoursingChart } from '../types/coursing-chart';
 
 type WallWidgetProps = {
   wall: Elevation;
@@ -55,26 +56,120 @@ const addBrickPaletteClasses = (brickRatio: BrickRatio): void => {
   style.innerHTML = innerHTML;
 };
 
-const renderCourse = (course: Course): JSX.Element => {
-  const brickItems = course.bricks.map((b: Brick) => {
+interface BrickUIState extends Brick {
+  isVisible: boolean;
+  isSelected: boolean;
+}
+
+interface CourseUIState {
+  id: string,
+  bricks:  Array<BrickUIState>;
+}
+
+interface WallUIState {
+  courses:  Array<CourseUIState>;
+}
+
+interface BrickComponentProps {
+  brick: BrickUIState;
+  handleBrickClick: Function;
+}
+
+const mapBricksToBrickUIStates = (wall: Elevation): WallUIState => {
+  return {
+    courses: wall.courses.map((course): CourseUIState => {
+      return {
+        id: course.id,
+        bricks: course.bricks.map((brick): BrickUIState => {
+          return {
+            ...brick,
+            isSelected: false,
+            isVisible: true,
+          };
+        }),
+      };
+    }),
+  };
+};
+
+const updateBrickState = (wall: WallUIState, updatedBrick: BrickUIState): WallUIState => {
+  return {
+    courses: wall.courses.map((course): CourseUIState => {
+      return {
+        id: course.id,
+        bricks: course.bricks.map((brick): BrickUIState => {
+          if (brick.id === updatedBrick.id) {
+            return {
+              ...updatedBrick,
+            };
+          }
+          return brick;
+        }),
+      };
+    }),
+  };
+};
+
+const updateBrickSelection = (wall: WallUIState, updatedBrick: BrickUIState): WallUIState => {
+  const resetSelection: boolean = true;
+  return {
+    courses: wall.courses.map((course): CourseUIState => {
+      return {
+        id: course.id,
+        bricks: course.bricks.map((brick): BrickUIState => {
+          if (brick.id === updatedBrick.id) {
+            return {
+              ...updatedBrick,
+            };
+          }
+          if (resetSelection) {
+            return {
+              ...brick,
+              isSelected: false,
+            };
+          }
+          return brick;
+        }),
+      };
+    }),
+  };
+};
+
+export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClick }) => {
+  const { isSelected } = brick;
+  return (
+    <div
+      className={`wall-widget__brick wall-widget__brick--${brick.letter} ${isSelected ? 'wall-widget__brick--active' : ''}`}
+      onClick={(e:any) => handleBrickClick(brick, e)}
+    />
+  );
+}
+
+const renderCourse = (course: CourseUIState, courseNumber: number, courseHeight: number, handleBrickClick: Function): JSX.Element => {
+  const brickItems = course.bricks.map((b: BrickUIState) => {
     return (
-      <div key={b.id} className={`wall-widget__brick wall-widget__brick--${b.letter}`} />
+      <BrickComponent key={b.id} brick={b} handleBrickClick={handleBrickClick} />
     );
   });
 
   return (
     <div>
-      <p className="wall-widget__course-stats"><small>#{course.n} {course.height}mm</small></p>
+      <p className="wall-widget__course-stats"><small>#{courseNumber} {courseHeight}mm</small></p>
       <div className="wall-widget__course">{brickItems}</div>
     </div>
   );
 };
 
-const renderCourses = (wall: Elevation): JSX.Element => {
-  const courses: Array<Course> = [...wall.courses].reverse();
-  const listItems = courses.map((c: Course) => {
+const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBrickClick: Function): JSX.Element => {
+  const courses = [...wall.courses].reverse();
+  const numberOfCourses = courses.length;
+  let n;
+  let height;
+  const listItems = courses.map((c: CourseUIState, i: number) => {
+    n = numberOfCourses - i;
+    height = getCourseHeight(n, coursingChart);
     return (
-      <li key={c.id} className="wall-widget__row">{renderCourse(c)}</li>
+      <li key={c.id} className="wall-widget__row">{renderCourse(c, n, height, handleBrickClick)}</li>
     );
   });
   return (
@@ -85,12 +180,25 @@ const renderCourses = (wall: Elevation): JSX.Element => {
 export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
   const divEl = useRef(null);
   const [collapseRows, setCollapseRows] = useState(false);
+  const [wallUi, setWallUi] = useState(mapBricksToBrickUIStates(wall));
+  const { coursingChart } = wall;
 
+  // Style bricks to match dimensions
   const brickRatio: BrickRatio = getRatios(wall);
   addBrickPaletteClasses(brickRatio);
 
+  // Collapse rows functionality
   const handleCollapseRowsChange = () => setCollapseRows(!collapseRows);
   const collapseRowsClass = () => collapseRows ? 'wall-widget--collapse-rows' : '';
+
+  const handleBrickClick = (brick: BrickUIState, e:any) => {
+    console.log(`handleBrickClick: #${brick.id} isSelected: ${brick.isSelected}`);
+    brick.isSelected = !brick.isSelected;
+
+    const updatedWallUi = updateBrickSelection(wallUi, brick);
+    setWallUi(updatedWallUi);
+    // if (e.ctrlKey)
+  };
 
   return (
     <div ref={divEl} className={`wall-widget ${collapseRowsClass()}`}>
@@ -107,7 +215,7 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
           </div>
         </div>
       </div>
-      {renderCourses(wall)}
+      {renderCourses(wallUi, coursingChart, handleBrickClick)}
     </div>
   );
 };
