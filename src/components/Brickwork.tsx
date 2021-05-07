@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ElevationSvg } from './ElevationSvg';
+import { WallSvg } from './WallSvg';
 import { Wall } from '../types/wall';
 
 interface BrickworkProps {
@@ -11,7 +11,7 @@ export const Brickwork: FC<BrickworkProps> = ({ wall }) => {
     <div className="brickwork row">
         <div className="col-md-6">
             <h2>{wall.bond.label}</h2>
-            <ElevationSvg elevation={wall} />
+            <WallSvg wall={wall} />
         </div>
     </div>
   );

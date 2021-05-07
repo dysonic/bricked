@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { WallWidget } from '../components/WallWidget';
-import { ElevationSvg } from '../components/ElevationSvg';
+import { WallSvg } from '../components/WallSvg';
 import { WallTextForm } from '../components/WallTextForm';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick, getWall } from '../redux/selectors';
@@ -44,7 +44,7 @@ const EditWallContainer: FC<PropsFromRedux> = ({ brick, wall }) => {
       <div>
         {isWidgetContext() && <WallWidget wall={wall} />}
         {isSourceContext() && <WallTextForm wall={wall} />}
-        {isPreviewContext() && <ElevationSvg elevation={wall} />}
+        {isPreviewContext() && <WallSvg wall={wall} />}
       </div>
     </div>
   );

@@ -47,19 +47,20 @@ const drawElevation = (svgContainer: SVGSVGElement | null, elevation: Wall) => {
 };
 
 
-type ElevationSvgProps = {
-  elevation: Wall,
+interface WallSvgProps {
+  wall: Wall;
 };
-export const ElevationSvg: FC<ElevationSvgProps> = ({ elevation }) => {
+export const WallSvg: FC<WallSvgProps> = ({ wall }) => {
   const svgEl = useRef(null);
+  const { bond, width, height } = wall;
 
   useEffect(() => {
-    drawElevation(svgEl.current, elevation);
+    drawElevation(svgEl.current, wall);
   });
 
   // var svgContainer = d3.select("body").append("svg").attr("width", 200).attr("height", 200);
   return (
-    <svg ref={svgEl} id={elevation.bond.id} className="elevation" width="500" viewBox={`0 0 ${elevation.width} ${elevation.height}`} />
+    <svg ref={svgEl} id={bond.id} className="elevation" width="500" viewBox={`0 0 ${width} ${height}`} />
   );
 };
 
