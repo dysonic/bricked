@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { Elevation } from '../types/elevation';
+import { Wall } from '../types/wall';
 import { Course } from '../types/course';
 import { Brick } from '../types/brick';
 import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../constants';
 
-const drawBrickAndReturnNewX = (b: string, elevation: Elevation, x:number, y:number, svgContainer: SVGSVGElement): number => {
+const drawBrickAndReturnNewX = (b: string, elevation: Wall, x:number, y:number, svgContainer: SVGSVGElement): number => {
   const path = d3.path();
   const width = elevation.brickPalette[b];
   path.rect(x, y, width, elevation.brickDimension.height);
@@ -16,7 +16,7 @@ const drawBrickAndReturnNewX = (b: string, elevation: Elevation, x:number, y:num
   return x + width + MORTAR_THICKNESS;
 };
 
-const drawElevation = (svgContainer: SVGSVGElement | null, elevation: Elevation) => {
+const drawElevation = (svgContainer: SVGSVGElement | null, elevation: Wall) => {
   if (!svgContainer) {
     return;
   }
@@ -48,7 +48,7 @@ const drawElevation = (svgContainer: SVGSVGElement | null, elevation: Elevation)
 
 
 type ElevationSvgProps = {
-  elevation: Elevation,
+  elevation: Wall,
 };
 export const ElevationSvg: FC<ElevationSvgProps> = ({ elevation }) => {
   const svgEl = useRef(null);

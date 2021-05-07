@@ -1,5 +1,5 @@
 import React, { FC }  from 'react';
-import { Elevation } from '../types/elevation';
+import { Wall } from '../types/wall';
 import { Course } from '../types/course';
 import { Brick } from '../types/brick';
 
@@ -7,7 +7,7 @@ const ROWS_BUFFER: number = 5;
 const COLS_BUFFER: number = 10;
 
 type WallTextFormProps = {
-  wall: Elevation,
+  wall: Wall,
 };
 
 export const WallTextForm: FC<WallTextFormProps> = ({ wall }) => {

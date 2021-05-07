@@ -5,19 +5,19 @@
 // }));
 
 import {
-  _calculateVerticalUsingElevationHeight,
+  _calculateVerticalUsingHeight,
   _calculateVerticalUsingNumberOfCourses,
   _calculateHorizontalUsingRepeatPattern,
-  _calculateHorizontalUsingElevationWidth,
+  _calculateHorizontalUsingWidth,
   _calculateRepeatPatternFromWidth,
-} from './elevation';
+} from './wall';
 import {
-  ElevationOptionsHeight,
-  ElevationOptionsNumberOfCourses,
-  ElevationOptionsRepeatPattern,
-  ElevationOptionsWidth,
-  Elevation,
-} from '../types/elevation'
+  WallOptionsHeight,
+  WallOptionsNumberOfCourses,
+  WallOptionsRepeatPattern,
+  WallOptionsWidth,
+  Wall,
+} from '../types/wall'
 import { Brick } from '../types/brick';
 import { BrickPalette, calculateWidthFromCourse } from './brick-palette';
 import { DOUBLE_FLEMISH_BOND as bond } from '../constants/bonds';
@@ -35,7 +35,7 @@ const brickPalette: BrickPalette = {
   q: 50,
 };
 
-const createElevation = (): Elevation => {
+const createElevation = (): Wall => {
   return {
     brick,
     bond,
@@ -49,7 +49,7 @@ const createElevation = (): Elevation => {
   };
 };
 
-const expectAllElevationCoursesHaveTheSameWidth = (elevation: Elevation) => {
+const expectAllElevationCoursesHaveTheSameWidth = (elevation: Wall) => {
   const widths = elevation.courses.map(c => {
     return calculateWidthFromCourse(c, elevation.brickPalette);
   });
@@ -58,7 +58,7 @@ const expectAllElevationCoursesHaveTheSameWidth = (elevation: Elevation) => {
 };
 
 test('_calculateVerticalUsingNumberOfCourses function', () => {
-  const elevationOptions:ElevationOptionsNumberOfCourses = {
+  const options:WallOptionsNumberOfCourses = {
     brick,
     bond,
     verticalGauge: getVerticalGauge(brick.height),
@@ -68,7 +68,7 @@ test('_calculateVerticalUsingNumberOfCourses function', () => {
 
   const elevation = createElevation();
 
-  _calculateVerticalUsingNumberOfCourses(elevationOptions, elevation);
+  _calculateVerticalUsingNumberOfCourses(options, elevation);
 
   expect(elevation.height).toBe(1200);
   expect(elevation.numberOfCourses).toBe(14);
@@ -91,7 +91,7 @@ test('_calculateVerticalUsingNumberOfCourses function', () => {
   ]);
 });
 
-test('_calculateVerticalUsingElevationHeight function', () => {
+test('_calculateVerticalUsingHeight function', () => {
   const elevationOptions:ElevationOptionsHeight = {
     brick,
     bond,
@@ -102,7 +102,7 @@ test('_calculateVerticalUsingElevationHeight function', () => {
 
   const elevation = createElevation();
 
-  _calculateVerticalUsingElevationHeight(elevationOptions, elevation);
+  _calculateVerticalUsingHeight(elevationOptions, elevation);
 
   expect(elevation.height).toBe(943);
   expect(elevation.numberOfCourses).toBe(11);
@@ -216,7 +216,7 @@ test.only('_calculateHorizontalUsingElevationWidth function', () => {
 
   // expect(_calculateHorizontalUsingRepeatPatternMock). toHaveBeenCalledBefore(_calculateHorizontalUsingRepeatPattern);
 
-  _calculateHorizontalUsingElevationWidth(elevationOptions, elevation);
+  _calculateHorizontalUsingWidth(elevationOptions, elevation);
 
   // expect(elevation.courses.length).toBe(11);
   // expect(elevation.courses).toEqual([
@@ -237,9 +237,9 @@ test.only('_calculateHorizontalUsingElevationWidth function', () => {
   // expectAllElevationCoursesHaveTheSameWidth(elevation);
 });
 
-test('xxx_calculateHorizontalUsingElevationWidth function', () => {
+test('xxx_calculateHorizontalUsingWidth function', () => {
   (_calculateHorizontalUsingRepeatPattern as jest.Mock)
-    .mockImplementationOnce((elevationOptions: ElevationOptionsRepeatPattern, elevation: Elevation) => {
+    .mockImplementationOnce((options: WallOptionsRepeatPattern, elevation: Wall) => {
 
     });
 
@@ -270,7 +270,7 @@ test('xxx_calculateHorizontalUsingElevationWidth function', () => {
   ];
 
 
-  _calculateHorizontalUsingElevationWidth(elevationOptions, elevation);
+  _calculateHorizontalUsingWidth(elevationOptions, elevation);
 
   expect(elevation.courses.length).toBe(11);
   expect(elevation.courses).toEqual([

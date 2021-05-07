@@ -1,10 +1,10 @@
 import { BrickDimension } from './brick-dimension';
 import { Bond } from '../constants/bonds';
 import { BrickPalette } from '../utils/brick-palette';
-import { CoursingChart } from '../types/coursing-chart';
+import { CoursingChart } from './coursing-chart';
 import { Course } from './course';
 
-export interface GenerateOptions {
+export interface GenerateWallOptions {
   brick: BrickDimension;
   bond: Bond;
   height?: number;
@@ -13,28 +13,28 @@ export interface GenerateOptions {
   repeatPattern?: number;
 }
 
-export interface ElevationOptions extends GenerateOptions {
+export interface WallOptions extends GenerateWallOptions {
   coursingChart: CoursingChart;
   brickPalette: BrickPalette;
 }
 
-export interface ElevationOptionsHeight extends ElevationOptions {
+export interface WallOptionsHeight extends WallOptions {
   height: number;
 }
 
-export interface ElevationOptionsNumberOfCourses extends ElevationOptions {
+export interface WallOptionsNumberOfCourses extends WallOptions {
   numberOfCourses: number;
 }
 
-export interface ElevationOptionsWidth extends ElevationOptions {
+export interface WallOptionsWidth extends WallOptions {
   width: number;
 }
 
-export interface ElevationOptionsRepeatPattern extends ElevationOptions {
+export interface WallOptionsRepeatPattern extends WallOptions {
   repeatPattern: number;
 }
 
-export interface Elevation {
+export interface Wall {
   brickDimension: BrickDimension;
   bond: Bond;
   height: number;

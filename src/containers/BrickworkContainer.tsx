@@ -4,26 +4,26 @@ import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
 import { RootState } from '../redux/types/root-state';
 import { bonds, Bond } from '../constants/bonds';
-import { generate } from '../utils/elevation';
-import { GenerateOptions } from '../types/elevation';
+import { generate } from '../utils/wall';
+import { GenerateWallOptions } from '../types/wall';
 import { BrickDimension } from '../types/brick-dimension';
-import { Elevation } from '../types/elevation';
+import { Wall } from '../types/wall';
 
-const generateElevations = (bonds: Array<Bond>, brick: BrickDimension): Array<Elevation> => {
-  const elevations: Array<Elevation> = [];
+const generateWalls = (bonds: Array<Bond>, brick: BrickDimension): Array<Wall> => {
+  const walls: Array<Wall> = [];
   bonds.forEach((bond: Bond) => {
-    const options: GenerateOptions = {
+    const options: GenerateWallOptions = {
       brick,
       bond,
       numberOfCourses: 4,
       repeatPattern: 2,
     };
-    const elevation: Elevation | null = generate(options);
+    const elevation: Wall | null = generate(options);
     if (elevation) {
-      elevations.push(elevation);
+      walls.push(elevation);
     }
   });
-  return elevations;
+  return walls;
 };
 
 const mapState = (state: RootState) => {
@@ -37,10 +37,8 @@ const connector = connect(mapState);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 const BrickworkContainer: FC<PropsFromRedux> = ({ brick }) => {
-  const elevations = generateElevations(bonds, brick);
-  console.log('elevations:', elevations.length);
-  console.log(elevations);
-  const items = elevations.map(elevation => <Brickwork key={elevation.bond.id} elevation={elevation} />)
+  const walls = generateWalls(bonds, brick);
+  const items = walls.map(wall => <Brickwork key={wall.bond.id} wall={wall} />)
   return (
     <>{items}</>
   );

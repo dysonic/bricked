@@ -1,13 +1,13 @@
 import React, { FC, useRef, useState } from 'react';
 import './WallWidget.scss';
-import { Elevation } from '../types/elevation';
+import { Wall } from '../types/wall';
 import { Brick } from '../types/brick';
 import { BrickRatio, getRatios } from '../utils/brick-palette';
 import { getCourseHeight } from '../utils/coursing-chart';
 import { CoursingChart } from '../types/coursing-chart';
 
 type WallWidgetProps = {
-  wall: Elevation;
+  wall: Wall;
 }
 
 // // https://www.color-hex.com/color-palette/5361
@@ -75,7 +75,7 @@ interface BrickComponentProps {
   handleBrickClick: Function;
 }
 
-const mapBricksToBrickUIStates = (wall: Elevation): WallUIState => {
+const mapBricksToBrickUIStates = (wall: Wall): WallUIState => {
   return {
     courses: wall.courses.map((course): CourseUIState => {
       return {

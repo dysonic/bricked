@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { getBrick, getWall } from '../redux/selectors';
 import { RootState } from '../redux/types/root-state';
 import { generateWall } from '../redux/actions';
-import { GenerateOptions } from '../types/elevation';
+import { GenerateWallOptions } from '../types/wall';
 import { bonds } from '../constants/bonds';
 
 const mapState = (state: RootState) => {
@@ -34,7 +34,7 @@ const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) =
       console.warn('Bond not found');
       return;
     }
-    const options: GenerateOptions = {
+    const options: GenerateWallOptions = {
       width: wallLength,
       height: wallHeight,
       brick,

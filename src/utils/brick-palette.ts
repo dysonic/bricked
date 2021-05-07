@@ -2,7 +2,7 @@ import { BrickDimension } from '../types/brick-dimension';
 import { Bond } from '../constants/bonds';
 import { StringNumber } from '../types/common';
 import { MORTAR_THICKNESS } from '../constants';
-import { Elevation } from '../types/elevation';
+import { Wall } from '../types/wall';
 
 export interface BrickPalette extends StringNumber {
 }
@@ -136,7 +136,7 @@ export interface BrickRatio {
   brickPalette: BrickPalette;
 }
 
-export const getRatios = (wall: Elevation): BrickRatio => {
+export const getRatios = (wall: Wall): BrickRatio => {
   const brickRatio: BrickRatio = {
     height: 0,
     brickPalette: {},

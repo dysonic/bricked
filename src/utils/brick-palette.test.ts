@@ -4,11 +4,11 @@ import {
   BrickPalette,
   BrickRatio,
 } from './brick-palette';
-import { Elevation } from '../types/elevation';
-import { Brick } from '../types/brick';
+import { Wall } from '../types/wall';
+import { BrickDimension } from '../types/brick-dimension';
 import { DOUBLE_FLEMISH_BOND as bond } from '../constants/bonds';
 
-const brick: Brick = {
+const brickDimension: BrickDimension = {
   length: 230,
   width: 110,
   height: 76,
@@ -21,14 +21,14 @@ const brickPalette: BrickPalette = {
 };
 
 test('_getShortestDimension function', () => {
-  const d: number = _getShortestDimension(brickPalette, brick.height);
+  const d: number = _getShortestDimension(brickPalette, brickDimension.height);
 
   expect(d).toBe(50);
 });
 
 test('getRatios function', () => {
-  const elevation: Elevation = {
-    brick,
+  const wall: Wall = {
+    brickDimension,
     bond,
     height: 0,
     width: 0,
@@ -39,7 +39,7 @@ test('getRatios function', () => {
     courses: [],
   };
 
-  const brickRatio: BrickRatio = getRatios(elevation);
+  const brickRatio: BrickRatio = getRatios(wall);
 
   expect(brickRatio).toEqual({
     height: 1.52,
