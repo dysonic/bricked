@@ -57,7 +57,7 @@ const addBrickPaletteClasses = (brickRatio: BrickRatio): void => {
 };
 
 interface BrickUIState extends Brick {
-  isVisible: boolean;
+  isGap: boolean;
   isSelected: boolean;
 }
 
@@ -70,11 +70,6 @@ interface WallUIState {
   courses:  Array<CourseUIState>;
 }
 
-interface BrickComponentProps {
-  brick: BrickUIState;
-  handleBrickClick: Function;
-}
-
 const mapBricksToBrickUIStates = (wall: Wall): WallUIState => {
   return {
     courses: wall.courses.map((course): CourseUIState => {
@@ -84,7 +79,7 @@ const mapBricksToBrickUIStates = (wall: Wall): WallUIState => {
           return {
             ...brick,
             isSelected: false,
-            isVisible: true,
+            isGap: false,
           };
         }),
       };
@@ -108,6 +103,38 @@ const updateBrickState = (wall: WallUIState, updatedBrick: BrickUIState): WallUI
       };
     }),
   };
+};
+
+const updateBrickStates = (wall: WallUIState, updatedBricks: Array<BrickUIState>): WallUIState => {
+  const updatedBrickIds: Array<string> = updatedBricks.map(ub => ub.id) ;
+  return {
+    courses: wall.courses.map((course): CourseUIState => {
+      return {
+        id: course.id,
+        bricks: course.bricks.map((brick): BrickUIState => {
+          if (updatedBrickIds.includes(brick.id)) {
+            const updatedBrick: BrickUIState | undefined = updatedBricks.find(b => b.id === brick.id);
+            if (updatedBrick) {
+              return {
+                ...updatedBrick,
+              };
+            }
+            return brick;
+          }
+          return brick;
+        }),
+      };
+    }),
+  };
+};
+
+const getSelectedBricks = (wall: WallUIState): Array<BrickUIState> => {
+  const selectedBricks: Array<BrickUIState> = [];
+  wall.courses.forEach(course => {
+    const selectedCourseBricks = course.bricks.filter(b => b.isSelected);
+    selectedBricks.push(...selectedCourseBricks);
+  });
+  return selectedBricks;
 };
 
 const updateBrickSelection = (wall: WallUIState, updatedBrick: BrickUIState): WallUIState => {
@@ -135,41 +162,89 @@ const updateBrickSelection = (wall: WallUIState, updatedBrick: BrickUIState): Wa
   };
 };
 
+interface BrickComponentProps {
+  brick: BrickUIState;
+  handleBrickClick: Function;
+}
+
 export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClick }) => {
-  const { isSelected } = brick;
+  const { isSelected, isGap } = brick;
   return (
     <div
-      className={`wall-widget__brick wall-widget__brick--${brick.letter} ${isSelected ? 'wall-widget__brick--active' : ''}`}
+      className={`wall-widget__brick wall-widget__brick--${brick.letter} ${isSelected ? 'wall-widget__brick--active' : ''} ${isGap ? 'wall-widget__brick--gap' : ''}`}
       onClick={(e:any) => handleBrickClick(brick, e)}
     />
   );
 }
 
-const renderCourse = (course: CourseUIState, courseNumber: number, courseHeight: number, handleBrickClick: Function): JSX.Element => {
+interface BrickToolsProps {
+  course: CourseUIState;
+  selectedBricks: Array<BrickUIState>;
+  handleToggleGap: Function;
+}
+
+export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap }) => {
+  return (
+    <div className="wall-widget__brick-tools">
+      <button onClick={(e:any) => handleToggleGap()}>Toggle gap</button>
+    </div>
+  );
+}
+interface CourseComponentProps {
+  course: CourseUIState;
+  courseNumber: number;
+  courseHeight: number;
+  handleBrickClick: Function;
+  handleToggleGap: Function;
+}
+
+export const CourseComponent: FC<CourseComponentProps> = ({ course, courseNumber, courseHeight, handleBrickClick, handleToggleGap }) => {
+  const [isOpen, setOpen] = useState(false);
+
+  const toogleOpen = () => setOpen(!isOpen);
+
   const brickItems = course.bricks.map((b: BrickUIState) => {
     return (
       <BrickComponent key={b.id} brick={b} handleBrickClick={handleBrickClick} />
     );
   });
 
+  const areAnyBricksSelected = course.bricks.some((b => b.isSelected));
   return (
-    <div>
-      <p className="wall-widget__course-stats"><small>#{courseNumber} {courseHeight}mm</small></p>
-      <div className="wall-widget__course">{brickItems}</div>
+    <div className="collapse">
+      <input type="checkbox" id={`collapse-section-${course.id}`} aria-hidden="true" onClick={toogleOpen} />
+      <label htmlFor={`collapse-section-${course.id}`} aria-hidden="true"><small>C{courseNumber} {courseHeight}mm</small></label>
+      {isOpen && <div>
+        <div className="wall-widget__course">{brickItems}</div>
+        {areAnyBricksSelected &&
+        <BrickTools
+          course={course}
+          selectedBricks={[]}
+          handleToggleGap={handleToggleGap}
+        />}
+      </div>}
     </div>
   );
-};
+}
 
-const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBrickClick: Function): JSX.Element => {
+const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBrickClick: Function, handleToggleGap: Function): JSX.Element => {
   const courses = [...wall.courses].reverse();
   const numberOfCourses = courses.length;
-  let n;
-  let height;
+  let n: number;
+  let height: number;
   const listItems = courses.map((c: CourseUIState, i: number) => {
     n = numberOfCourses - i;
     height = getCourseHeight(n, coursingChart);
     return (
-      <li key={c.id} className="wall-widget__row">{renderCourse(c, n, height, handleBrickClick)}</li>
+      <li key={c.id} className="wall-widget__row">
+        <CourseComponent
+          course={c}
+          courseNumber={n}
+          courseHeight={height}
+          handleBrickClick={handleBrickClick}
+          handleToggleGap={handleToggleGap}
+        />
+      </li>
     );
   });
   return (
@@ -191,12 +266,24 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
   const handleCollapseRowsChange = () => setCollapseRows(!collapseRows);
   const collapseRowsClass = () => collapseRows ? 'wall-widget--collapse-rows' : '';
 
-  const handleBrickClick = (brick: BrickUIState, e:any) => {
+  const handleBrickClick = (brick: BrickUIState, e:any): void => {
     console.log(`handleBrickClick: #${brick.id} isSelected: ${brick.isSelected}`);
     brick.isSelected = !brick.isSelected;
 
-    const updatedWallUi = updateBrickSelection(wallUi, brick);
-    setWallUi(updatedWallUi);
+    setWallUi(updateBrickSelection(wallUi, brick));
+    // if (e.ctrlKey)
+  };
+
+  const handleToggleGap = (): void => {
+    const selectedBricks = getSelectedBricks(wallUi);
+    if (!selectedBricks.length) {
+      return;
+    }
+    const desiredVisibility = !selectedBricks[0].isGap;
+    console.log(`handleToggleGap: desiredVisibilty: ${desiredVisibility}`);
+    selectedBricks.forEach(b => b.isGap = desiredVisibility);
+    setWallUi(updateBrickStates(wallUi, selectedBricks));
+
     // if (e.ctrlKey)
   };
 
@@ -215,7 +302,7 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
           </div>
         </div>
       </div>
-      {renderCourses(wallUi, coursingChart, handleBrickClick)}
+      {renderCourses(wallUi, coursingChart, handleBrickClick, handleToggleGap)}
     </div>
   );
 };

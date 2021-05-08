@@ -20,8 +20,6 @@ $active: blue;
     padding-left: 0;
 
     .wall-widget__row {
-      border-top: 1px grey dotted;
-      margin-bottom: 1em;
 
       .wall-widget__course-stats {
         margin: 0 1em 0.2em 0;
@@ -52,6 +50,11 @@ $active: blue;
           &.wall-widget__brick--q {
             background-color: $wiki_queen_closer;
             border-color: $wiki_queen_closer_border;
+          }
+
+          &.wall-widget__brick--gap {
+            border-color: transparent;
+            background-color: transparent !important;
           }
 
           &.wall-widget__brick--active {
