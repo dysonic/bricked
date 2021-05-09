@@ -87,24 +87,6 @@ const mapBricksToBrickUIStates = (wall: Wall): WallUIState => {
   };
 };
 
-const updateBrickState = (wall: WallUIState, updatedBrick: BrickUIState): WallUIState => {
-  return {
-    courses: wall.courses.map((course): CourseUIState => {
-      return {
-        id: course.id,
-        bricks: course.bricks.map((brick): BrickUIState => {
-          if (brick.id === updatedBrick.id) {
-            return {
-              ...updatedBrick,
-            };
-          }
-          return brick;
-        }),
-      };
-    }),
-  };
-};
-
 const updateBrickStates = (wall: WallUIState, updatedBricks: Array<BrickUIState>): WallUIState => {
   const updatedBrickIds: Array<string> = updatedBricks.map(ub => ub.id) ;
   return {
@@ -137,31 +119,35 @@ const getSelectedBricks = (wall: WallUIState): Array<BrickUIState> => {
   return selectedBricks;
 };
 
-const updateBrickSelection = (wall: WallUIState, updatedBrick: BrickUIState): WallUIState => {
-  const resetSelection: boolean = true;
+const updateBrickSelection = (wall: WallUIState, selectedBricks: Array<BrickUIState>): WallUIState => {
+  const selectedBrickIds: Array<string> = selectedBricks.map(sb => sb.id) ;
   return {
     courses: wall.courses.map((course): CourseUIState => {
       return {
         id: course.id,
         bricks: course.bricks.map((brick): BrickUIState => {
-          if (brick.id === updatedBrick.id) {
-            return {
-              ...updatedBrick,
-            };
-          }
-          if (resetSelection) {
-            return {
-              ...brick,
-              isSelected: false,
-            };
-          }
-          return brick;
+          const isSelected = selectedBrickIds.includes(brick.id);
+          return {
+            ...brick,
+            isSelected,
+          };
         }),
       };
     }),
   };
 };
 
+const findCourseWithBrick = (brick: BrickUIState, wallUi: WallUIState): CourseUIState | undefined => {
+  return wallUi.courses.find(c => c.bricks.find(b => b.id === brick.id));
+};
+
+const findSameBricksInCourse = (brick: BrickUIState, course:CourseUIState, excludeEnds: boolean = true): Array<BrickUIState> => {
+  const lastIndex = course.bricks.length - 1;
+  const isNotEndBrick = (i: number): boolean => {
+    return !excludeEnds || (i !== 0 && i !== lastIndex);
+  };
+  return course.bricks.filter((b, i) => b.letter === brick.letter && b.id !== brick.id && isNotEndBrick(i));
+}
 interface BrickComponentProps {
   brick: BrickUIState;
   handleBrickClick: Function;
@@ -181,12 +167,27 @@ interface BrickToolsProps {
   course: CourseUIState;
   selectedBricks: Array<BrickUIState>;
   handleToggleGap: Function;
+  handleSelectSameBricks: Function;
 }
 
-export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap }) => {
+export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, handleSelectSameBricks }) => {
+  const [selectSame, setSelectSame] = useState(false);
+
+  const toogleSelectSame = () => {
+    const updatedSelectSame = !selectSame;
+    setSelectSame(updatedSelectSame);
+    handleSelectSameBricks(updatedSelectSame);
+  };
+
   return (
     <div className="wall-widget__brick-tools">
-      <button onClick={(e:any) => handleToggleGap()}>Toggle gap</button>
+      <div className="row">
+        <input type="checkbox" autoComplete="off" id="select-same" checked={selectSame} onChange={toogleSelectSame} />
+        <label htmlFor="select-other-bricks">Select matching bricks</label>
+      </div>
+      <div className="row">
+        <button onClick={(e:any) => handleToggleGap()}>Toggle gap</button>
+      </div>
     </div>
   );
 }
@@ -196,9 +197,11 @@ interface CourseComponentProps {
   courseHeight: number;
   handleBrickClick: Function;
   handleToggleGap: Function;
+  handleSelectSameBricks: Function;
 }
 
-export const CourseComponent: FC<CourseComponentProps> = ({ course, courseNumber, courseHeight, handleBrickClick, handleToggleGap }) => {
+export const CourseComponent: FC<CourseComponentProps> = (props) => {
+  const { course, courseNumber, courseHeight, handleBrickClick, handleToggleGap, handleSelectSameBricks } = props;
   const [isOpen, setOpen] = useState(false);
 
   const toogleOpen = () => setOpen(!isOpen);
@@ -212,7 +215,7 @@ export const CourseComponent: FC<CourseComponentProps> = ({ course, courseNumber
   const areAnyBricksSelected = course.bricks.some((b => b.isSelected));
   return (
     <div className="collapse">
-      <input type="checkbox" id={`collapse-section-${course.id}`} aria-hidden="true" onClick={toogleOpen} />
+      <input type="checkbox" id={`collapse-section-${course.id}`} aria-hidden="true" checked={isOpen} onChange={toogleOpen} />
       <label htmlFor={`collapse-section-${course.id}`} aria-hidden="true"><small>C{courseNumber} {courseHeight}mm</small></label>
       {isOpen && <div>
         <div className="wall-widget__course">{brickItems}</div>
@@ -221,13 +224,14 @@ export const CourseComponent: FC<CourseComponentProps> = ({ course, courseNumber
           course={course}
           selectedBricks={[]}
           handleToggleGap={handleToggleGap}
+          handleSelectSameBricks={handleSelectSameBricks}
         />}
       </div>}
     </div>
   );
 }
 
-const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBrickClick: Function, handleToggleGap: Function): JSX.Element => {
+const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBrickClick: Function, handleToggleGap: Function, handleSelectSameBricks: Function): JSX.Element => {
   const courses = [...wall.courses].reverse();
   const numberOfCourses = courses.length;
   let n: number;
@@ -243,6 +247,7 @@ const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBr
           courseHeight={height}
           handleBrickClick={handleBrickClick}
           handleToggleGap={handleToggleGap}
+          handleSelectSameBricks={handleSelectSameBricks}
         />
       </li>
     );
@@ -252,10 +257,13 @@ const renderCourses = (wall: WallUIState, coursingChart: CoursingChart, handleBr
   );
 };
 
+// type BrickUIStateOrNull = BrickUIState | null;
+
 export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
   const divEl = useRef(null);
   const [collapseRows, setCollapseRows] = useState(false);
   const [wallUi, setWallUi] = useState(mapBricksToBrickUIStates(wall));
+  const [selectedBrick, setSelectedBrick] = useState<BrickUIState | null>(null);
   const { coursingChart } = wall;
 
   // Style bricks to match dimensions
@@ -263,15 +271,29 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
   addBrickPaletteClasses(brickRatio);
 
   // Collapse rows functionality
-  const handleCollapseRowsChange = () => setCollapseRows(!collapseRows);
+  const handleCollapseRows = () => setCollapseRows(!collapseRows);
   const collapseRowsClass = () => collapseRows ? 'wall-widget--collapse-rows' : '';
 
   const handleBrickClick = (brick: BrickUIState, e:any): void => {
     console.log(`handleBrickClick: #${brick.id} isSelected: ${brick.isSelected}`);
-    brick.isSelected = !brick.isSelected;
+    const isSelected = !brick.isSelected;
+    setSelectedBrick(isSelected ? brick : null);
+    setWallUi(updateBrickSelection(wallUi, [brick]));
+  };
 
-    setWallUi(updateBrickSelection(wallUi, brick));
-    // if (e.ctrlKey)
+  const handleSelectSameBricks = (selectMatching: boolean) => {
+    console.log(`handleSelectSameBricks: selectMatching: ${selectMatching}`);
+    if (!selectedBrick) {
+      return;
+    }
+    const course: CourseUIState | undefined = findCourseWithBrick(selectedBrick, wallUi);
+    if (!course) {
+      return;
+    }
+
+    const sameBricks = findSameBricksInCourse(selectedBrick, course);
+    const selectedBricks = sameBricks.concat(selectedBrick);
+    setWallUi(updateBrickSelection(wallUi, selectedBricks));
   };
 
   const handleToggleGap = (): void => {
@@ -283,8 +305,6 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
     console.log(`handleToggleGap: desiredVisibilty: ${desiredVisibility}`);
     selectedBricks.forEach(b => b.isGap = desiredVisibility);
     setWallUi(updateBrickStates(wallUi, selectedBricks));
-
-    // if (e.ctrlKey)
   };
 
   return (
@@ -296,13 +316,13 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall }) => {
               type="checkbox"
               autoComplete="off"
               id="collapse-rows"
-              onChange={(e: any) => handleCollapseRowsChange()}
+              onChange={(e: any) => handleCollapseRows()}
               checked={collapseRows}
             /><label htmlFor="collapse-rows">Collapse rows</label>
           </div>
         </div>
       </div>
-      {renderCourses(wallUi, coursingChart, handleBrickClick, handleToggleGap)}
+      {renderCourses(wallUi, coursingChart, handleBrickClick, handleToggleGap, handleSelectSameBricks)}
     </div>
   );
 };
