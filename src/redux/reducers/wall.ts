@@ -3,7 +3,7 @@ import {
   GENERATE_WALL,
   WallActionTypes,
 } from '../types/wall';
-import { generate } from '../../utils/wall';
+import { buildWall } from '../../utils/wall';
 
 const LOCAL_STORAGE_KEY = 'wall';
 
@@ -23,7 +23,7 @@ const wallReducer = (state = initialState, action: WallActionTypes) => {
   console.log('action.type', action.type);
   switch (action.type) {
     case GENERATE_WALL: {
-      const wall: Wall | null = generate(action.options);
+      const wall: Wall | null = buildWall(action.options);
       if (wall) {
         const newState = { ...wall };
         saveWall(newState);

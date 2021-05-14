@@ -1,7 +1,5 @@
 import React, { FC }  from 'react';
 import { Wall } from '../types/wall';
-import { Course } from '../types/course';
-import { Brick } from '../types/brick';
 
 const ROWS_BUFFER: number = 5;
 const COLS_BUFFER: number = 10;
@@ -11,17 +9,13 @@ type WallTextFormProps = {
 };
 
 export const WallTextForm: FC<WallTextFormProps> = ({ wall }) => {
-  // const courses: Array<string> = [];
-  const courses: Array<Course> = [...wall.courses].reverse();
-  const coursesAsStrings: Array<string> = courses.map((course: Course) => {
-    return course.bricks.map((brick: Brick) => brick.letter).join('');
-  });
-  console.log('coursesAsStrings:', coursesAsStrings);
-  const rows = coursesAsStrings.length + ROWS_BUFFER;
-  const maxCourseLength = coursesAsStrings.reduce((acc: number, course: string): number => Math.max(acc, course.length), 0);
+  const { courses } = wall;
+  const reversedCourses = [...courses].reverse();
+  const rows = reversedCourses.length + ROWS_BUFFER;
+  const maxCourseLength = reversedCourses.reduce((acc, c) => Math.max(acc, c.length), 0);
   const cols = maxCourseLength + COLS_BUFFER;
 
-  const coursesText: string = coursesAsStrings.join('\n');
+  const coursesText: string = reversedCourses.join('\n');
 
   return (
     <div className="wall-text-form col-sm">

@@ -5,7 +5,7 @@ import {
   BrickActionTypes,
 } from './types/brick';
 import { GENERATE_WALL, WallActionTypes } from './types/wall';
-import { GenerateWallOptions } from '../types/wall';
+import { Options } from '../utils/wall';
 
 export const updateBrickLength = (value:number): BrickActionTypes => ({
   type: UPDATE_BRICK_LENGTH,
@@ -22,7 +22,7 @@ export const updateBrickHeight = (value:number): BrickActionTypes => ({
   value,
 });
 
-export const generateWall = (options: GenerateWallOptions): WallActionTypes => ({
+export const generateWall = (options: Options): WallActionTypes => ({
   type: GENERATE_WALL,
   options,
 })

@@ -21,7 +21,7 @@ export const createBrickPalette = (brick: BrickDimension, bond: Bond): BrickPale
       throw new Error('Bond does not have an example course where all brick dimensions are known');
     }
 
-    const width: number = calculateWidthFromCourse(courseKnown, brickPalette);
+    const width: number = getCourseWidth(courseKnown, brickPalette);
     // console.log('width:', width);
 
     let loop: boolean = _doesExampleHaveUnknownBrick(example, brickPalette)
@@ -73,19 +73,12 @@ const _findExampleCourseWithSingleUnknownBrick = (example: string[], brickPalett
   });
 };
 
-export const calculateWidthFromCourse = (course: string, brickPalette: BrickPalette): number => {
-  const bricks: Array<string> = course.split('');
-  const numberOfBricks: number = bricks.length;
-  const brickWidths: Array<number> = bricks.map(b => {
-    if (brickPalette[b]) {
-      return brickPalette[b];
-    }
-    throw new Error(`Brick found (${b}) that does not exist is brickPalette`);
-  });
-  const brickTotal: number = brickWidths.reduce((acc, w) => acc + w);
-  const mortarTotal: number = (numberOfBricks - 1) * MORTAR_THICKNESS;
-  const width: number = brickTotal + mortarTotal;
-  return width;
+export const getCourseWidth = (course: string, brickPalette: BrickPalette): number => {
+  const brickLetters = course.split('');
+  const brickTotal = brickLetters.reduce((w, brickLetter) =>
+    w + brickPalette[brickLetter.toLowerCase()], 0);
+  const mortarTotal: number = (brickLetters.length - 1) * MORTAR_THICKNESS;
+  return brickTotal + mortarTotal;
 }
 
 const _solveUnknownDimension = (course: string, brickPalette: BrickPalette, width: number) => {
@@ -154,4 +147,26 @@ export const _getShortestDimension = (brickPalette: BrickPalette, brickHeight: n
   return dimensions.reduce((acc: number, d: number): number => {
     return Math.min(acc, d);
   }, 999);
+};
+
+export const addBrickPaletteClasses = (brickRatio: BrickRatio): void => {
+  const STYLE_ID: string = 'brick-style';
+  let innerHTML: string = '';
+  innerHTML += `.wall-widget .wall-widget__brick { height: ${brickRatio.height}em; }\n`;
+  Object.entries(brickRatio.brickPalette).forEach(([brickLetter, width]) => {
+    innerHTML += `.wall-widget .wall-widget__brick--${brickLetter} { width: ${width}em; }\n`;
+  });
+
+
+  let style: HTMLElement | null = document.getElementById(STYLE_ID);
+  if (!style) {
+    style = document.createElement('style');
+    style.id = STYLE_ID;
+    // style.type = 'text/css';
+    style.innerHTML = innerHTML;
+    document.getElementsByTagName('head')[0].appendChild(style);
+    return;
+  }
+
+  style.innerHTML = innerHTML;
 };

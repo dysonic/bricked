@@ -19,7 +19,7 @@ import {
   Wall,
 } from '../types/wall'
 import { Brick } from '../types/brick';
-import { BrickPalette, calculateWidthFromCourse } from './brick-palette';
+import { BrickPalette, getCourseWidth } from './brick-palette';
 import { DOUBLE_FLEMISH_BOND as bond } from '../constants/bonds';
 import { getVerticalGauge } from '../constants/coursing-charts';
 
@@ -51,7 +51,7 @@ const createElevation = (): Wall => {
 
 const expectAllElevationCoursesHaveTheSameWidth = (elevation: Wall) => {
   const widths = elevation.courses.map(c => {
-    return calculateWidthFromCourse(c, elevation.brickPalette);
+    return getCourseWidth(c, elevation.brickPalette);
   });
   const allTheSame = widths.every(width => width === elevation.width);
   expect(allTheSame).toBe(true);

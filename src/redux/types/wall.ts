@@ -1,10 +1,10 @@
-import { GenerateWallOptions } from '../../types/wall';
+import { Options } from '../../utils/wall';
 
 export const GENERATE_WALL = 'GENERATE_WALL';
 
 interface GenerateWallAction {
   type: typeof GENERATE_WALL,
-  options: GenerateWallOptions,
+  options: Options,
 }
 
 export type WallActionTypes = GenerateWallAction;

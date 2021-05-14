@@ -10,7 +10,7 @@ export const Brickwork: FC<BrickworkProps> = ({ wall }) => {
   return (
     <div className="brickwork row">
         <div className="col-md-6">
-            <h2>{wall.bond.label}</h2>
+            <h2>{wall.label}</h2>
             <WallSvg wall={wall} />
         </div>
     </div>
