@@ -1,8 +1,6 @@
+import { createReducer } from '@reduxjs/toolkit';
 import { Wall } from '../../types/wall';
-import {
-  GENERATE_WALL,
-  WallActionTypes,
-} from '../types/wall';
+import { buildWall as buildWallAction } from '../actions';
 import { buildWall } from '../../utils/wall';
 
 const LOCAL_STORAGE_KEY = 'wall';
@@ -19,22 +17,13 @@ const saveWall = (newState:Wall): void => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
 };
 
-const wallReducer = (state = initialState, action: WallActionTypes) => {
-  console.log('action.type', action.type);
-  switch (action.type) {
-    case GENERATE_WALL: {
-      const wall: Wall | null = buildWall(action.options);
+export const wallReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(buildWallAction, (state, action) => {
+      const wall: Wall | null = buildWall(action.payload);
       if (wall) {
-        const newState = { ...wall };
-        saveWall(newState);
-        return newState;
+        saveWall(wall);
+        state = wall;
       }
-      return state;
-    }
-    default: {
-      return state;
-    }
-  }
-};
-
-export default wallReducer;
+    });
+});

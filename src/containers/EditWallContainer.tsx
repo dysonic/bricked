@@ -1,11 +1,12 @@
 import React, { FC, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import { WallWidget } from '../components/WallWidget';
 import { WallSvg } from '../components/WallSvg';
 import { WallTextForm } from '../components/WallTextForm';
 import { connect, ConnectedProps } from 'react-redux';
 import { getWall } from '../redux/selectors';
-import { RootState } from '../redux/types/root-state';
+import { RootState } from '../redux/store';
 import { Wall } from '../types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../utils/brick-palette';
 
@@ -54,7 +55,15 @@ const mapWallToUIStates = (wall: Wall): Array<UICourse> => {
 type PropsFromRedux = ConnectedProps<typeof connector>
 const EditWallContainer: FC<PropsFromRedux> = ({ wall }) => {
   const [context, setContext] = useState(CONTEXT_WIDGET);
-  const [uiCourses, setUICourses] = useState(mapWallToUIStates(wall));
+  const [uiCourses, setUICourses] = useState([]);
+
+  if (!wall) {
+    return (
+      <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
+    );
+  }
+
+  mapWallToUIStates(wall);
 
   const isWidgetContext = () => context === CONTEXT_WIDGET;
   const isSourceContext = () => context === CONTEXT_SOURCE;

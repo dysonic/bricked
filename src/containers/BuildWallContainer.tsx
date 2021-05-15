@@ -3,9 +3,8 @@ import { useHistory } from "react-router-dom";
 import { BuildWallForm } from '../components/BuildWallForm';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick, getWall } from '../redux/selectors';
-import { RootState } from '../redux/types/root-state';
-import { generateWall } from '../redux/actions';
-import { Options } from '../utils/wall';
+import { RootState } from '../redux/store';
+import { buildWall } from '../redux/actions';
 import { bonds } from '../constants/bonds';
 
 const mapState = (state: RootState) => {
@@ -18,13 +17,13 @@ const mapState = (state: RootState) => {
 };
 
 const mapDispatch = {
-  generateWall,
+  buildWall,
 };
 
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
-const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) => {
+const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, buildWall }) => {
   const history = useHistory();
 
   const handleSubmit = (wallLength:number, wallHeight:number, wallBondId:string) => {
@@ -34,13 +33,13 @@ const BuildWallContainer: FC<PropsFromRedux> = ({ brick, wall, generateWall }) =
       console.warn('Bond not found');
       return;
     }
-    const options: Options = {
+
+    buildWall({
       width: wallLength,
       height: wallHeight,
       brick,
       bond,
-    };
-    generateWall(options);
+    });
 
     history.push('/edit-wall');
   };

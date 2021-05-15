@@ -4,7 +4,7 @@ import { CoursingChartPage } from '../components/CoursingChartPage';
 import { CoursingChart } from '../types/coursing-chart';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
-import { RootState } from '../redux/types/root-state';
+import { RootState } from '../redux/store';
 import { findCoursingChartForBrickHeight } from '../utils/coursing-chart';
 
 const mapState = (state: RootState) => {

@@ -3,7 +3,7 @@ import BrickForm from '../components/BrickForm';
 import IsoBrick from '../components/IsoBrick';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
-import { RootState } from '../redux/types/root-state';
+import { RootState } from '../redux/store';
 import {
   updateBrickLength,
   updateBrickWidth,

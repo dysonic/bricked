@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Brickwork } from '../components/Brickwork';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
-import { RootState } from '../redux/types/root-state';
+import { RootState } from '../redux/store';
 import { bonds, Bond } from '../constants/bonds';
 import { buildWall, Options } from '../utils/wall';
 import { BrickDimension } from '../types/brick-dimension';
