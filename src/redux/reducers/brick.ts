@@ -1,30 +1,22 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { updateBrickLength, updateBrickWidth, updateBrickHeight } from '../actions';
+import { setBrick } from '../actions';
 import { BrickDimension } from '../../types/brick-dimension';
+import { STANDARD } from '../../constants/bricks';
 
 const LOCAL_STORAGE_KEY = 'brick';
 
 const brickJsonString: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
-const brick: BrickDimension = brickJsonString ? JSON.parse(brickJsonString) : { width: 0, length: 0, height: 0 };
-const initialState = brick;
+const brick: BrickDimension = brickJsonString ? JSON.parse(brickJsonString) : STANDARD;
 
-const saveBrick = (newState: BrickDimension): void => {
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
+const saveBrick = (brick: BrickDimension): void => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(brick));
 };
 
-
-export const brickReducer = createReducer(initialState, (builder) => {
+export const brickReducer = createReducer(brick, (builder) => {
   builder
-    .addCase(updateBrickLength, (state, action) => {
-      state.length = action.payload;
-      saveBrick(state);
-    })
-    .addCase(updateBrickWidth, (state, action) => {
-      state.width = action.payload;
-      saveBrick(state);
-    })
-    .addCase(updateBrickHeight, (state, action) => {
-      state.height = action.payload;
+    .addCase(setBrick, (state, action) => {
+      console.log(`setBrick action - brick: ${action.payload.id}`);
+      state = action.payload;
       saveBrick(state);
     });
 });

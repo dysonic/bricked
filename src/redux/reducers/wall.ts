@@ -11,19 +11,17 @@ if (wallJsonString) {
   wall = JSON.parse(wallJsonString);
 }
 
-const initialState = wall;
-
-const saveWall = (newState:Wall): void => {
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
+const saveWall = (wall: Wall): void => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(wall));
 };
 
-export const wallReducer = createReducer(initialState, (builder) => {
+export const wallReducer = createReducer(wall, (builder) => {
   builder
     .addCase(buildWallAction, (state, action) => {
       const wall: Wall | null = buildWall(action.payload);
       if (wall) {
-        saveWall(wall);
         state = wall;
+        saveWall(wall);
       }
     });
 });

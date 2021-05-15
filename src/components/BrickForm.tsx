@@ -1,84 +1,49 @@
-import React, { FC, useState }  from 'react';
+import React, { FC }  from 'react';
 import { BrickDimension } from '../types/brick-dimension';
-import getNumeric from '../utils/get-numeric';
-
-type BrickFormProps = {
-  className?: string,
-  brick: BrickDimension
-  updateBrickLength: Function,
-  updateBrickWidth: Function,
-  updateBrickHeight: Function,
+interface BrickFormProps {
+  brick: BrickDimension;
+  bricks: Array<BrickDimension>;
+  setBrick: Function;
 };
-export const BrickForm: FC<BrickFormProps> = ({ brick,  updateBrickLength, updateBrickWidth, updateBrickHeight}) => {
-  const [length, setLength] = useState(brick.length);
-  const [width, setWidth] = useState(brick.width);
-  const [height, setHeight] = useState(brick.height);
+export const BrickForm: FC<BrickFormProps> = ({ brick, bricks, setBrick }) => {
+  const brickOptions = bricks.map(b =>
+    <option key={b.id} value={b.id}>{b.label}</option>
+  );
 
-  const handleLengthChange = (e:any) => {
-    setLength(e.target.value);
-    const value = getNumeric(e.target.value);
-    if (value !== null) {
-      updateBrickLength(value);
+  const handleBrickChange = (brickId: string) => {
+    console.log(`handleBrickChange - brickId: ${brickId}`);
+    const selectedBrick = bricks.find(b => b.id === brickId);
+    if (!selectedBrick) {
+      return;
     }
-  };
-
-  const handleWidthChange = (e:any) => {
-    setWidth(e.target.value);
-    const value = getNumeric(e.target.value);
-    if (value !== null) {
-      updateBrickWidth(value);
-    }
-  };
-
-  const handleHeightChange = (e:any) => {
-    setHeight(e.target.value);
-    const value = getNumeric(e.target.value);
-    if (value !== null) {
-      updateBrickHeight(value);
-    }
+    setBrick(selectedBrick);
   };
 
   return (
-    <div className="brick-form col-sm-4">
-      <form>
-        <fieldset>
-          <legend>Brick manufacturing size:</legend>
-          <div className="row">
-            <div className="col-md-6">
-              <label id="length-label">Length (Stretcher)</label>
-            </div>
-            <div className="col-md">
-              <input
-                aria-labelledby="length-label"
-                value={length}
-                onChange={handleLengthChange} />
-            </div>
+    <form>
+      <fieldset>
+        <legend>Brick manufacturing size:</legend>
+        <div className="row">
+          <div className="col-sm-8">
+            <label id="brick-label">Brick Dimension</label>
           </div>
-          <div className="row">
-            <div className="col-md-6">
-              <label id="width-label">Width (Header)</label>
-            </div>
-            <div className="col-md">
-              <input
-                aria-labelledby="width-label"
-                value={width}
-                onChange={handleWidthChange}/>
-            </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-8">
+            <select
+              id="wall-brick"
+              aria-labelledby="brick-label"
+              value={brick.id}
+              onChange={(
+                e: React.ChangeEvent<HTMLSelectElement>,
+            ): void => handleBrickChange(e.target.value)}
+            >
+              {brickOptions}
+            </select>
           </div>
-          <div className="row">
-            <div className="col-md-6">
-              <label id="height-label">Height</label>
-            </div>
-            <div className="col-md">
-              <input
-                aria-labelledby="height-label"
-                value={height}
-                onChange={handleHeightChange}/>
-            </div>
-          </div>
-        </fieldset>
-      </form>
-    </div>
+        </div>
+      </fieldset>
+    </form>
   );
 }
 

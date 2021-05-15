@@ -1,7 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
+import { BrickDimension } from '../types/brick-dimension';
 import { Options } from '../utils/wall';
 
-export const updateBrickLength = createAction<number>('brick/update-length');
-export const updateBrickWidth = createAction<number>('brick/update-width');
-export const updateBrickHeight = createAction<number>('brick/update-height');
+export const setBrick = createAction<BrickDimension>('brick/set');
 export const buildWall = createAction<Options>('wall/build');

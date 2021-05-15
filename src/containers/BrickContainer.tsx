@@ -4,12 +4,8 @@ import IsoBrick from '../components/IsoBrick';
 import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
 import { RootState } from '../redux/store';
-import {
-  updateBrickLength,
-  updateBrickWidth,
-  updateBrickHeight,
-} from '../redux/actions';
-
+import { setBrick } from '../redux/actions';
+import { bricks } from '../constants/bricks';
 
 const mapState = (state: RootState) => {
   const brick = getBrick(state);
@@ -17,20 +13,21 @@ const mapState = (state: RootState) => {
 };
 
 const mapDispatch = {
-  updateBrickLength,
-  updateBrickWidth,
-  updateBrickHeight,
+  setBrick,
 }
 
 const connector = connect(mapState, mapDispatch);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
-const BrickContainer: FC<PropsFromRedux> = ({ brick, ...actions }) => {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+const BrickContainer: FC<PropsFromRedux> = ({ brick, setBrick }) => {
+  console.log(`BrickContainer - brick: ${brick.id}`);
   return (
     <div className="brick-dimensions row">
-        <BrickForm className="col-md-4" brick={brick} {...actions} />
-        <div className="col-md-2">
-            <IsoBrick brick={brick} />
+      <div className="brick-form col-sm-4">
+        <BrickForm brick={brick} bricks={bricks} setBrick={setBrick} />
+      </div>
+        <div className="col-sm-2">
+          <IsoBrick brick={brick} />
         </div>
     </div>
   );

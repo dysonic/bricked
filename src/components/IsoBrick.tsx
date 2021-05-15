@@ -38,7 +38,9 @@ const lineAttrs = (points: Point[]): LineAttributes => {
   }, attrs);
 };
 
-type IsoBrickProps = { brick: BrickDimension };
+interface IsoBrickProps {
+  brick: BrickDimension;
+};
 export const IsoBrick: FC<IsoBrickProps> = ({ brick }) => {
   const { width, height, length } = brick;
   console.log('width:', width, 'height:', height, 'length:', length);
