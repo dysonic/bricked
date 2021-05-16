@@ -2,22 +2,9 @@ import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { BuildWallForm } from '../components/BuildWallForm';
-import { getBrick, getWall } from '../redux/selectors';
+import { getBrick } from '../redux/selectors';
 import { buildWall } from '../redux/actions';
 import { bonds } from '../constants/bonds';
-
-// const mapState = (state: RootState) => {
-//   const brick = getBrick(state);
-//   const wall = getWall(state);
-//   return {
-//     brick,
-//     wall,
-//   };
-// };
-
-// const mapDispatch = {
-//   buildWall,
-// };
 
 export const BuildWallContainer: FC<{}> = () => {
   const history = useHistory();
