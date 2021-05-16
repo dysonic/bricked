@@ -5,7 +5,6 @@ import { STANDARD as initialState } from '../../constants/bricks';
 export const brickReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(changeBrick, (state, action) => {
-      console.log(`changeBrick action - brick: ${action.payload.id}`);
-      state = action.payload;
+      return action.payload;
     });
 });

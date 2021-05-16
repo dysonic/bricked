@@ -121,7 +121,7 @@ export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, handl
     <div className="wall-widget__brick-tools">
       <div className="row">
         <input type="checkbox" autoComplete="off" id="select-same" checked={selectSame} onChange={toogleSelectSame} />
-        <label htmlFor="select-other-bricks">Select matching bricks</label>
+        <label htmlFor="select-other-bricks">Select matching interior bricks</label>
       </div>
       <div className="row">
         <button onClick={(e:any) => handleToggleGap()}>Toggle gap</button>

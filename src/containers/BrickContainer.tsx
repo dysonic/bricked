@@ -11,7 +11,6 @@ export const BrickContainer: FC<{}> = () => {
   const dispatch = useDispatch();
 
   const handleBrickChange = (brickId: string) => {
-    console.log(`handleBrickChange - brickId: ${brickId}`);
     const selectedBrick = bricks.find(b => b.id === brickId);
     if (!selectedBrick) {
       return;
@@ -19,7 +18,6 @@ export const BrickContainer: FC<{}> = () => {
     dispatch(changeBrick(selectedBrick));
   };
 
-  console.log(`BrickContainer - brick: ${brick.id}`);
   return (
     <div className="brick-dimensions row">
       <div className="brick-form col-sm-4">

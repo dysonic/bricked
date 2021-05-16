@@ -20,8 +20,8 @@ export const wallReducer = createReducer(wall, (builder) => {
     .addCase(buildWallAction, (state, action) => {
       const wall: Wall | null = buildWall(action.payload);
       if (wall) {
-        state = wall;
         saveWall(wall);
+        return wall;
       }
     });
 });

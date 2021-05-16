@@ -3,15 +3,15 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from "react-router-dom";
+} from 'react-router-dom';
 import './App.scss';
 import { MainMenu } from './components/MainMenu';
 import { Home } from './components/Home';
-import BrickContainer from './containers/BrickContainer';
-import CoursingChartContainer from './containers/CoursingChartContainer';
-import BrickworkContainer from './containers/BrickworkContainer';
-import BuildWallContainer from './containers/BuildWallContainer';
-import EditWallContainer from './containers/EditWallContainer';
+import { BrickContainer } from './containers/BrickContainer';
+import { CoursingChartContainer } from './containers/CoursingChartContainer';
+import { BrickworkContainer } from './containers/BrickworkContainer';
+import { BuildWallContainer } from './containers/BuildWallContainer';
+import { EditWallContainer } from './containers/EditWallContainer';
 
 function App() {
   return (

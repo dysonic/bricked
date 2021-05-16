@@ -1,27 +1,17 @@
 import React, { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import { WallWidget } from '../components/WallWidget';
 import { WallSvg } from '../components/WallSvg';
 import { WallTextForm } from '../components/WallTextForm';
-import { connect, ConnectedProps } from 'react-redux';
 import { getWall } from '../redux/selectors';
-import { RootState } from '../redux/store';
 import { Wall } from '../types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../utils/brick-palette';
 
 const CONTEXT_WIDGET = 'widget';
 const CONTEXT_SOURCE = 'source';
 const CONTEXT_PREVIEW = 'preview';
-
-const mapState = (state: RootState) => {
-  const wall = getWall(state);
-  return {
-    wall,
-  };
-};
-
-const connector = connect(mapState);
 
 const getActiveClass = (context: string, buttonContext: string): string  => context === buttonContext ? 'primary' : '';
 
@@ -37,7 +27,10 @@ export interface UICourse {
   bricks:  Array<UIBrick>;
 }
 
-const mapWallToUIStates = (wall: Wall): Array<UICourse> => {
+const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
+  if (!wall) {
+    return [];
+  }
   const { courses } = wall;
   return courses.map((course): UICourse => {
     return {
@@ -52,18 +45,16 @@ const mapWallToUIStates = (wall: Wall): Array<UICourse> => {
   });
 };
 
-type PropsFromRedux = ConnectedProps<typeof connector>
-const EditWallContainer: FC<PropsFromRedux> = ({ wall }) => {
+export const EditWallContainer: FC<{}> = () => {
+  const wall = useSelector(getWall);
   const [context, setContext] = useState(CONTEXT_WIDGET);
-  const [uiCourses, setUICourses] = useState([]);
+  const [uiCourses, setUICourses] = useState<Array<UICourse>>(mapWallToUIStates(wall));
 
   if (!wall) {
     return (
       <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
     );
   }
-
-  mapWallToUIStates(wall);
 
   const isWidgetContext = () => context === CONTEXT_WIDGET;
   const isSourceContext = () => context === CONTEXT_SOURCE;
@@ -92,5 +83,3 @@ const EditWallContainer: FC<PropsFromRedux> = ({ wall }) => {
     </div>
   );
 }
-
-export default connector(EditWallContainer);

@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
+import { useSelector } from 'react-redux';
 import { Brickwork } from '../components/Brickwork';
-import { connect, ConnectedProps } from 'react-redux';
 import { getBrick } from '../redux/selectors';
-import { RootState } from '../redux/store';
 import { bonds, Bond } from '../constants/bonds';
 import { buildWall, Options } from '../utils/wall';
 import { BrickDimension } from '../types/brick-dimension';
@@ -25,22 +24,11 @@ const generateWalls = (bonds: Array<Bond>, brick: BrickDimension): Array<Wall> =
   return walls;
 };
 
-const mapState = (state: RootState) => {
-  const brick = getBrick(state);
-  return {
-    brick,
-  };
-};
-
-const connector = connect(mapState);
-
-type PropsFromRedux = ConnectedProps<typeof connector>
-const BrickworkContainer: FC<PropsFromRedux> = ({ brick }) => {
+export const BrickworkContainer: FC<{}> = () => {
+  const brick = useSelector(getBrick);
   const walls = generateWalls(bonds, brick);
   const items = walls.map((wall, i) => <Brickwork key={wall.id} wall={wall} />)
   return (
     <>{items}</>
   );
 }
-
-export default connector(BrickworkContainer);
