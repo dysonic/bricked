@@ -3,21 +3,12 @@ import { BrickDimension } from '../types/brick-dimension';
 interface BrickFormProps {
   brick: BrickDimension;
   bricks: Array<BrickDimension>;
-  setBrick: Function;
+  handleBrickChange: Function;
 };
-export const BrickForm: FC<BrickFormProps> = ({ brick, bricks, setBrick }) => {
+export const BrickForm: FC<BrickFormProps> = ({ brick, bricks, handleBrickChange }) => {
   const brickOptions = bricks.map(b =>
     <option key={b.id} value={b.id}>{b.label}</option>
   );
-
-  const handleBrickChange = (brickId: string) => {
-    console.log(`handleBrickChange - brickId: ${brickId}`);
-    const selectedBrick = bricks.find(b => b.id === brickId);
-    if (!selectedBrick) {
-      return;
-    }
-    setBrick(selectedBrick);
-  };
 
   return (
     <form>

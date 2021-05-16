@@ -44,8 +44,8 @@ export const BuildWallForm: FC<BuildWallFormProps> = ({ brick, onSubmit }) => {
   };
 
   const bondOptions = [...bonds].map((bond) =>
-  <option key={bond.id} value={bond.id}>{bond.label}</option>
-);
+    <option key={bond.id} value={bond.id}>{bond.label}</option>
+  );
 
   return (
     <div className="brick-form col-sm-4">
