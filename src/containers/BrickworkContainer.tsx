@@ -25,8 +25,8 @@ const generateWalls = (bonds: Array<Bond>, brick: BrickDimension): Array<Wall> =
 };
 
 export const BrickworkContainer: FC<{}> = () => {
-  const brick = useSelector(getBrick);
-  const walls = generateWalls(bonds, brick);
+  const { brickDimension } = useSelector(getBrick);
+  const walls = generateWalls(bonds, brickDimension);
   const items = walls.map((wall, i) => <Brickwork key={wall.id} wall={wall} />)
   return (
     <>{items}</>

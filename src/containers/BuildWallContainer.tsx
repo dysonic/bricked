@@ -8,7 +8,7 @@ import { bonds } from '../constants/bonds';
 
 export const BuildWallContainer: FC<{}> = () => {
   const history = useHistory();
-  const brick = useSelector(getBrick);
+  const { brickDimension: brick } = useSelector(getBrick);
   const dispatch = useDispatch();
 
   const handleSubmit = (wallLength:number, wallHeight:number, wallBondId:string) => {
