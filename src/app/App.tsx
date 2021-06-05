@@ -1,19 +1,27 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from 'react-router-dom';
 import './App.scss';
-import { MainMenu } from './components/MainMenu';
-import { Home } from './components/Home';
-import { BrickContainer } from './containers/BrickContainer';
-import { CoursingChartContainer } from './containers/CoursingChartContainer';
-import { BrickworkContainer } from './containers/BrickworkContainer';
-import { BuildWallContainer } from './containers/BuildWallContainer';
-import { EditWallContainer } from './containers/EditWallContainer';
+import { loadBrick } from '../features/brick/brickSlice';
+import { loadWall } from '../features/wall/wallSlice';
+import { MainMenu } from '../components/MainMenu';
+import { Home } from '../components/Home';
+import { BrickContainer } from '../features/brick/BrickContainer';
+import { CoursingChartContainer } from '../features/brick/CoursingChartContainer';
+import { BrickworkContainer } from '../features/brick/BrickworkContainer';
+import { BuildWallContainer } from '../features/wall/BuildWallContainer';
+import { EditWallContainer } from '../features/wall/EditWallContainer';
 
-function App() {
+export const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(loadBrick());
+    dispatch(loadWall());
+  });
   return (
     <Router>
       <div className="container App">
@@ -54,6 +62,4 @@ function App() {
       </div>
     </Router>
   );
-}
-
-export default App;
+};

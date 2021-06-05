@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { CoursingChart } from '../types/coursing-chart';
-import { VerticalGaugeMark } from '../types/vertical-gauge-mark';
-import { getVerticalGauge } from '../utils/coursing-chart';
+import { CoursingChart } from '../../common/types/coursing-chart';
+import { VerticalGaugeMark } from '../../common/types/vertical-gauge-mark';
+import { getVerticalGauge } from '../../common/utils/coursing-chart';
 
 interface CoursingDiagramProps {
   marks: Array<VerticalGaugeMark>;

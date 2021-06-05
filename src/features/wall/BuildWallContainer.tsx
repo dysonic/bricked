@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { BuildWallForm } from '../components/BuildWallForm';
-import { getBrick } from '../redux/selectors';
-import { buildWall } from '../redux/actions';
-import { bonds } from '../constants/bonds';
+import { BuildWallForm } from './BuildWallForm';
+import { selectBrick } from '../brick/brickSlice';
+import { wallSlice } from './wallSlice';
+import { bonds } from '../../common/constants/bonds';
 
 export const BuildWallContainer: FC<{}> = () => {
   const history = useHistory();
-  const { brickDimension: brick } = useSelector(getBrick);
+  const { brickDimension: brick } = useSelector(selectBrick);
   const dispatch = useDispatch();
 
   const handleSubmit = (wallLength:number, wallHeight:number, wallBondId:string) => {
@@ -19,7 +19,7 @@ export const BuildWallContainer: FC<{}> = () => {
       return;
     }
 
-    dispatch(buildWall({
+    dispatch(wallSlice.actions.buildWall({
       width: wallLength,
       height: wallHeight,
       brick,

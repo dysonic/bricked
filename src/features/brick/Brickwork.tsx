@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { WallSvg } from './WallSvg';
-import { Wall } from '../types/wall';
+import { WallSvg } from '../wall/WallSvg';
+import { Wall } from '../../common/types/wall';
 
 interface BrickworkProps {
   wall: Wall;

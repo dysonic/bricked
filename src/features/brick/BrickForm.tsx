@@ -1,5 +1,5 @@
 import React, { FC }  from 'react';
-import { BrickDimension } from '../types/brick-dimension';
+import { BrickDimension } from '../../common/types/brick-dimension';
 interface BrickFormProps {
   brick: BrickDimension;
   bricks: Array<BrickDimension>;

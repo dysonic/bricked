@@ -1,5 +1,5 @@
 import React, { FC }  from 'react';
-import { Wall } from '../types/wall';
+import { Wall } from '../../common/types/wall';
 
 const ROWS_BUFFER: number = 5;
 const COLS_BUFFER: number = 10;

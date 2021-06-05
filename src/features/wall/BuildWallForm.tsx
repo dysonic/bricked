@@ -1,7 +1,7 @@
 import React, { FC, useState, useRef }  from 'react';
-import { BrickDimension } from '../types/brick-dimension';
-import getNumeric from '../utils/get-numeric';
-import { bonds } from '../constants/bonds';
+import { BrickDimension } from '../../common/types/brick-dimension';
+import getNumeric from '../../common/utils/get-numeric';
+import { bonds } from '../../common/constants/bonds';
 
 const validateNumber = (value:string | undefined, input:any):boolean => {
   if (value === null || value === '') {

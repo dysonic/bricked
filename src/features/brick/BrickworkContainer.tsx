@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { Brickwork } from '../components/Brickwork';
-import { getBrick } from '../redux/selectors';
-import { bonds, Bond } from '../constants/bonds';
-import { buildWall, Options } from '../utils/wall';
-import { BrickDimension } from '../types/brick-dimension';
-import { Wall } from '../types/wall';
+import { Brickwork } from './Brickwork';
+import { selectBrick } from './brickSlice';
+import { bonds, Bond } from '../../common/constants/bonds';
+import { buildWall, Options } from '../../common/utils/wall';
+import { BrickDimension } from '../../common/types/brick-dimension';
+import { Wall } from '../../common/types/wall';
 
 const generateWalls = (bonds: Array<Bond>, brick: BrickDimension): Array<Wall> => {
   const walls: Array<Wall> = [];
@@ -25,7 +25,7 @@ const generateWalls = (bonds: Array<Bond>, brick: BrickDimension): Array<Wall> =
 };
 
 export const BrickworkContainer: FC<{}> = () => {
-  const { brickDimension } = useSelector(getBrick);
+  const { brickDimension } = useSelector(selectBrick);
   const walls = generateWalls(bonds, brickDimension);
   const items = walls.map((wall, i) => <Brickwork key={wall.id} wall={wall} />)
   return (

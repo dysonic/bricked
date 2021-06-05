@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import './IsoBrick.scss';
-import { BrickDimension } from '../types/brick-dimension';
+import { BrickDimension } from '../../common/types/brick-dimension';
 
 const ANGLE_RADIANS = 30 / 180 * Math.PI;
 

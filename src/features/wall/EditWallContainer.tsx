@@ -2,16 +2,16 @@ import React, { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
-import { WallWidget } from '../components/WallWidget';
-import { WallSvg } from '../components/WallSvg';
-import { WallTextForm } from '../components/WallTextForm';
-import { getWall } from '../redux/selectors';
-import { Wall } from '../types/wall';
-import { BrickRatio, getRatios, addBrickPaletteClasses } from '../utils/brick-palette';
+import { WallWidget } from './WallWidget';
+import { WallSvg } from './WallSvg';
+import { WallTextForm } from './WallTextForm';
+import { selectWall } from './wallSlice';
+import { Wall } from '../../common/types/wall';
+import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 
-const CONTEXT_WIDGET = 'widget';
-const CONTEXT_SOURCE = 'source';
-const CONTEXT_PREVIEW = 'preview';
+const contextWidget = 'widget';
+const contextSource = 'source';
+const contextPreview = 'preview';
 
 const getActiveClass = (context: string, buttonContext: string): string  => context === buttonContext ? 'primary' : '';
 
@@ -46,8 +46,8 @@ const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
 };
 
 export const EditWallContainer: FC<{}> = () => {
-  const wall = useSelector(getWall);
-  const [context, setContext] = useState(CONTEXT_WIDGET);
+  const wall: Wall | null = useSelector(selectWall).current;
+  const [context, setContext] = useState(contextWidget);
   const [uiCourses, setUICourses] = useState<Array<UICourse>>(mapWallToUIStates(wall));
 
   if (!wall) {
@@ -56,9 +56,9 @@ export const EditWallContainer: FC<{}> = () => {
     );
   }
 
-  const isWidgetContext = () => context === CONTEXT_WIDGET;
-  const isSourceContext = () => context === CONTEXT_SOURCE;
-  const isPreviewContext = () => context === CONTEXT_PREVIEW;
+  const isWidgetContext = () => context === contextWidget;
+  const isSourceContext = () => context === contextSource;
+  const isPreviewContext = () => context === contextPreview;
 
   // Initial set up for <WallWidget />.
   // Style bricks to match dimensions.
@@ -70,9 +70,9 @@ export const EditWallContainer: FC<{}> = () => {
       <div className="row">
         <div className="col-sm-4"></div>
           <div className="button-group">
-            <button className={getActiveClass(context, CONTEXT_WIDGET)} onClick={(e: any) => setContext(CONTEXT_WIDGET)}>Widget</button>
-            <button className={getActiveClass(context, CONTEXT_SOURCE)} onClick={(e: any) => setContext(CONTEXT_SOURCE)}>Source</button>
-            <button className={getActiveClass(context, CONTEXT_PREVIEW)} onClick={(e: any) => setContext(CONTEXT_PREVIEW)}>Preview</button>
+            <button className={getActiveClass(context, contextWidget)} onClick={(e: any) => setContext(contextWidget)}>Widget</button>
+            <button className={getActiveClass(context, contextSource)} onClick={(e: any) => setContext(contextSource)}>Source</button>
+            <button className={getActiveClass(context, contextPreview)} onClick={(e: any) => setContext(contextPreview)}>Preview</button>
           </div>
       </div>
       <div>

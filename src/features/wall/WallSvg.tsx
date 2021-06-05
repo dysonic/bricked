@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { Wall } from '../types/wall';
-import { getWallWidth, getWallHeight } from  '../utils/wall';
-import { getCourseHeight } from '../utils/coursing-chart';
-import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../constants';
+import { Wall } from '../../common/types/wall';
+import { getWallWidth, getWallHeight } from  '../../common/utils/wall';
+import { getCourseHeight } from '../../common/utils/coursing-chart';
+import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../../common/constants';
 
 const drawBrickAndReturnNewX = (b: string, wall: Wall, x:number, y:number, svgContainer: SVGSVGElement): number => {
   const path = d3.path();

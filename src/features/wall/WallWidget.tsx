@@ -1,9 +1,9 @@
 import React, { FC, useRef, useState } from 'react';
 import './WallWidget.scss';
-import { Wall } from '../types/wall';
-import { getCourseHeight } from '../utils/coursing-chart';
-import { CoursingChart } from '../types/coursing-chart';
-import { UICourse, UIBrick } from '../containers/EditWallContainer';
+import { Wall } from '../../common/types/wall';
+import { getCourseHeight } from '../../common/utils/coursing-chart';
+import { CoursingChart } from '../../common/types/coursing-chart';
+import { UICourse, UIBrick } from './EditWallContainer';
 
 // // https://www.color-hex.com/color-palette/5361
 // const PASTEL_RED: string = '#ffb3ba';

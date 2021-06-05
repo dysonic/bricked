@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import BrickForm from '../components/BrickForm';
-import IsoBrick from '../components/IsoBrick';
-import { getBrick } from '../redux/selectors';
-import { changeBrick } from '../redux/actions';
-import { bricks } from '../constants/bricks';
+import BrickForm from './BrickForm';
+import IsoBrick from './IsoBrick';
+import { selectBrick, brickSlice } from './brickSlice';
+import { bricks } from '../../common/constants/bricks';
 
 export const BrickContainer: FC<{}> = () => {
-  const { brickDimension } = useSelector(getBrick);
+  const { brickDimension } = useSelector(selectBrick);
   const dispatch = useDispatch();
 
   const handleBrickChange = (brickId: string) => {
@@ -15,7 +14,7 @@ export const BrickContainer: FC<{}> = () => {
     if (!selectedBrick) {
       return;
     }
-    dispatch(changeBrick(selectedBrick));
+    dispatch(brickSlice.actions.changeBrick(selectedBrick));
   };
 
   return (

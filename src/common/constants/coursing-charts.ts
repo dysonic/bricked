@@ -16,5 +16,3 @@ export const coursingCharts: Array<CoursingChart> = [
   STANDARD_BRICK_76,
   MODULAR_BRICK_90,
 ];
-
-
