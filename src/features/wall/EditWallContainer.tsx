@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import { WallWidget } from './WallWidget';
 import { WallSvg } from './WallSvg';
 import { WallTextForm } from './WallTextForm';
-import { selectWall } from './wallSlice';
+import { selectWall, wallSlice } from './wallSlice';
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 
@@ -45,10 +45,17 @@ const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
   });
 };
 
+const mapUIStatesToCourses = (courses: Array<UICourse>): Array<string> => {
+  return courses.map(uiCourse => {
+    return uiCourse.bricks.map(b => b.isGap ? b.letter.toLowerCase() : b.letter).join('');
+  });
+};
+
 export const EditWallContainer: FC<{}> = () => {
   const wall: Wall | null = useSelector(selectWall).current;
   const [context, setContext] = useState(contextWidget);
   const [uiCourses, setUICourses] = useState<Array<UICourse>>(mapWallToUIStates(wall));
+  const dispatch = useDispatch();
 
   if (!wall) {
     return (
@@ -65,6 +72,13 @@ export const EditWallContainer: FC<{}> = () => {
   const brickRatio: BrickRatio = getRatios(wall);
   addBrickPaletteClasses(brickRatio);
 
+  const handleSaveWall = () => {
+    console.log('handleSaveWall');
+    const courses = mapUIStatesToCourses(uiCourses);
+    dispatch(wallSlice.actions.updateWallCourses(courses));
+    dispatch(wallSlice.actions.saveWall());
+  }
+
   return (
     <div>
       <div className="row">
@@ -76,7 +90,7 @@ export const EditWallContainer: FC<{}> = () => {
           </div>
       </div>
       <div>
-        {isWidgetContext() && <WallWidget wall={wall} courses={uiCourses} setCourses={setUICourses} />}
+        {isWidgetContext() && <WallWidget wall={wall} courses={uiCourses} setCourses={setUICourses} saveWall={handleSaveWall} />}
         {isSourceContext() && <WallTextForm wall={wall} />}
         {isPreviewContext() && <WallSvg wall={wall} />}
       </div>

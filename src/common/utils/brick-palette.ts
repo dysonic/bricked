@@ -3,15 +3,15 @@ import { Bond } from '../constants/bonds';
 import { StringNumber } from '../types/common';
 import { MORTAR_THICKNESS } from '../constants';
 import { Wall } from '../types/wall';
-
+import { HEADER, STRETCHER } from '../constants/brick-letters';
 export interface BrickPalette extends StringNumber {
 }
 
 export const createBrickPalette = (brick: BrickDimension, bond: Bond): BrickPalette => {
   const example: string[] = [ bond.example.odd, bond.example.even ];
   const brickPalette: BrickPalette = {
-    s: brick.length,
-    h: brick.width,
+    [HEADER]: brick.width,
+    [STRETCHER]: brick.length,
   };
 
   const hasUnknownBrick: boolean = _doesExampleHaveUnknownBrick(example, brickPalette);
@@ -63,7 +63,7 @@ const _doesExampleHaveUnknownBrick = (example: string[], brickPalette: BrickPale
 const _findExampleCourseWithKnownBricks = (example: string[]): string | undefined => {
 
   // The brick course that only contains stretchers (S) and headers (H)
-  return example.find(c => /^[hs]+$/.test(c));
+  return example.find(c => /^[HS]+$/i.test(c));
 };
 
 const _findExampleCourseWithSingleUnknownBrick = (example: string[], brickPalette: BrickPalette): string | undefined => {
@@ -76,7 +76,7 @@ const _findExampleCourseWithSingleUnknownBrick = (example: string[], brickPalett
 export const getCourseWidth = (course: string, brickPalette: BrickPalette): number => {
   const brickLetters = course.split('');
   const brickTotal = brickLetters.reduce((w, brickLetter) =>
-    w + brickPalette[brickLetter.toLowerCase()], 0);
+    w + brickPalette[brickLetter.toUpperCase()], 0);
   const mortarTotal: number = (brickLetters.length - 1) * MORTAR_THICKNESS;
   return brickTotal + mortarTotal;
 }
@@ -154,7 +154,7 @@ export const addBrickPaletteClasses = (brickRatio: BrickRatio): void => {
   let innerHTML: string = '';
   innerHTML += `.wall-widget .wall-widget__brick { height: ${brickRatio.height}em; }\n`;
   Object.entries(brickRatio.brickPalette).forEach(([brickLetter, width]) => {
-    innerHTML += `.wall-widget .wall-widget__brick--${brickLetter} { width: ${width}em; }\n`;
+    innerHTML += `.wall-widget .wall-widget__brick--${brickLetter.toLowerCase()} { width: ${width}em; }\n`;
   });
 
 

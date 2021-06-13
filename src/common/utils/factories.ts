@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from '@reduxjs/toolkit'
 import { Course } from '../types/course';
 import { Brick } from '../types/brick';
 

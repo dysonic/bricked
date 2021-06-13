@@ -18,23 +18,41 @@ export interface Bond {
   }
 }
 
-export const DOUBLE_FLEMISH_BOND: Bond = {
-  id: 'double-flemish',
-  label: 'Double Flemish',
+export const STRETCHER_BOND: Bond = {
+  id: 'stretcher',
+  label: 'Stretcher',
   example: {
-    odd: 'shs',
-    even: 'hqsqh',
+    odd: 'SHS',
+    even: 'HSH',
   },
   pattern: {
     odd: {
-      start: 'sh', repeat: 'sh', end: 's',
+      start: 'S', repeat: 'S', end: 'S',
     },
     even: {
-      start: 'hqs', repeat: 'hs', end: 'qh',
+      start: 'HS', repeat: 'S', end: 'H',
+    },
+  },
+};
+
+export const FLEMISH_BOND: Bond = {
+  id: 'flemish',
+  label: 'Flemish',
+  example: {
+    odd: 'SHS',
+    even: 'HQSQH',
+  },
+  pattern: {
+    odd: {
+      start: 'SH', repeat: 'SH', end: 'S',
+    },
+    even: {
+      start: 'HQS', repeat: 'HS', end: 'QH',
     },
   },
 };
 
 export const bonds: Array<Bond> = [
-  DOUBLE_FLEMISH_BOND,
+  STRETCHER_BOND,
+  FLEMISH_BOND,
 ];

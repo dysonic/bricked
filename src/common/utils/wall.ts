@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from '@reduxjs/toolkit'
 import { findCoursingChartForBrickHeight, getDeltaHeights, getCourseHeight } from './coursing-chart';
 import { BondPattern } from '../constants/bonds';
 import { createBrickPalette, getCourseWidth } from './brick-palette';

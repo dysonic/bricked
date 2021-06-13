@@ -95,7 +95,7 @@ export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClic
   const { isSelected, isGap } = brick;
   return (
     <div
-      className={`wall-widget__brick wall-widget__brick--${brick.letter} ${isSelected ? 'wall-widget__brick--active' : ''} ${isGap ? 'wall-widget__brick--gap' : ''}`}
+      className={`wall-widget__brick wall-widget__brick--${brick.letter.toLowerCase()} ${isSelected ? 'wall-widget__brick--active' : ''} ${isGap ? 'wall-widget__brick--gap' : ''}`}
       onClick={(e:any) => handleBrickClick(brick, e)}
     />
   );
@@ -201,8 +201,9 @@ type WallWidgetProps = {
   wall: Wall;
   courses: Array<UICourse>;
   setCourses: Function;
+  saveWall: Function;
 }
-export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses }) => {
+export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, saveWall }) => {
   const divEl = useRef(null);
   const [collapseRows, setCollapseRows] = useState(false);
   const [selectedBrick, setSelectedBrick] = useState<UIBrick | null>(null);
@@ -257,6 +258,9 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses }) =
               onChange={(e: any) => handleCollapseRows()}
               checked={collapseRows}
             /><label htmlFor="collapse-rows">Collapse rows</label>
+          </div>
+          <div className="col-sm-4">
+            <button className="" onClick={(e: any) => saveWall()}>Save</button>
           </div>
         </div>
       </div>
