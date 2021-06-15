@@ -33,13 +33,14 @@ export const loadWall = createAsyncThunk<
 export const loadWallAsync = createAsyncThunk<Wall | null, void>(
   'wall/load',
   async () => {
-    return api.getWall();
+    return api.fetchWall();
   },
 );
 
 export const saveWallAsync = createAsyncThunk<void, Wall>(
   'wall/save',
   async (wall: Wall) => {
+    console.log('saveWallAsync:', wall.courses.slice(0, 5));
     api.saveWall(wall);
   },
 );
@@ -68,9 +69,9 @@ export const wallSlice = createSlice({
     builder
       .addCase(loadWallAsync.fulfilled, (state, action) => {
         state.current = action.payload;
+      })
+      .addCase(saveWallAsync.fulfilled, (state, action) => {
       });
-      // .addCase(saveWall.fulfilled, (state, action) => {
-      // });
   },
 });
 
@@ -79,17 +80,16 @@ export const wallSlice = createSlice({
 export const selectWall = (store :RootState) => store.wall;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
-// Here's an example of conditionally dispatching actions based on current state.
-/*
-export const incrementIfOdd = (amount: number): AppThunk => (
+export const updateWallCoursesAndSaveWall = (courses: Array<string>): AppThunk => (
   dispatch,
   getState
 ) => {
-  const currentValue = selectCount(getState());
-  if (currentValue % 2 === 1) {
-    dispatch(incrementByAmount(amount));
+  const { updateWallCourses } = wallSlice.actions;
+  dispatch(updateWallCourses(courses));
+  const wall = selectWall(getState()).current;
+  if (wall) {
+    dispatch(saveWallAsync(wall));
   }
 };
-*/
 
 export default wallSlice.reducer;

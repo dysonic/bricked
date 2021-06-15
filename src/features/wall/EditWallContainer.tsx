@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import { WallWidget } from './WallWidget';
 import { WallSvg } from './WallSvg';
 import { WallTextForm } from './WallTextForm';
-import { selectWall, wallSlice } from './wallSlice';
+import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall } from './wallSlice';
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 
@@ -39,7 +39,7 @@ const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
         id: nanoid(),
         letter,
         isSelected: false,
-        isGap: false,
+        isGap: /[a-z]/.test(letter),
       })),
     };
   });
@@ -57,6 +57,7 @@ export const EditWallContainer: FC<{}> = () => {
   const [uiCourses, setUICourses] = useState<Array<UICourse>>(mapWallToUIStates(wall));
   const dispatch = useDispatch();
 
+  console.log('EditWallContainer render');
   if (!wall) {
     return (
       <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
@@ -75,8 +76,10 @@ export const EditWallContainer: FC<{}> = () => {
   const handleSaveWall = () => {
     console.log('handleSaveWall');
     const courses = mapUIStatesToCourses(uiCourses);
-    dispatch(wallSlice.actions.updateWallCourses(courses));
-    dispatch(wallSlice.actions.saveWall());
+    // dispatch(wallSlice.actions.updateWallCourses(courses));
+    // dispatch(saveWallAsync(wall));
+
+    dispatch(updateWallCoursesAndSaveWall(courses));
   }
 
   return (

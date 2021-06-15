@@ -3,7 +3,8 @@ import { STRETCHER_BOND as bond } from '../../common/constants/bonds';
 import wallReducer, {
   WallState,
   wallSlice,
-  loadWallAsync
+  loadWallAsync,
+  saveWallAsync,
 } from './wallSlice';
 const { buildWall, updateWallCourses } = wallSlice.actions;
 
@@ -53,7 +54,7 @@ describe('wall reducer', () => {
     expect(actual.current?.courses).toEqual(['XXX', 'YYY']);
   });
 
-  it('should handle loadWall', () => {
+  it('should handle loadWallAsync', () => {
     const wall = {
       id: '1',
       label: 'label',
@@ -75,6 +76,34 @@ describe('wall reducer', () => {
     const actual = wallReducer(initialState, {
       type: loadWallAsync.fulfilled,
       payload: wall,
+    });
+    expect(actual.current).toEqual(wall);
+  });
+
+  it('should handle saveWallAsync', () => {
+    const wall = {
+      id: '1',
+      label: 'label',
+      brickDimension: {
+        id: '2',
+        label: 'brick',
+        length: 100,
+        width: 200,
+        height: 300,
+      },
+      brickPalette: {},
+      coursingChart: {
+        id: '3',
+        brickHeight: 300,
+        verticalGauge: [],
+      },
+      courses: ['HHH', 'SSS'],
+    };
+    const actual = wallReducer({
+      current: wall,
+    }, {
+      type: saveWallAsync.fulfilled,
+      payload: undefined,
     });
     expect(actual.current).toEqual(wall);
   });

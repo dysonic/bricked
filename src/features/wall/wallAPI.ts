@@ -2,7 +2,7 @@ import { Wall } from '../../common/types/wall';
 
 const localStorageKey = 'wall';
 
-export const getWall = (): Wall | null => {
+export const fetchWall = (): Wall | null => {
   const wallJsonString:string | null = localStorage.getItem(localStorageKey);
   return wallJsonString ? JSON.parse(wallJsonString) : null;
 };

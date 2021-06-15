@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import './App.scss';
 import { loadBrick } from '../features/brick/brickSlice';
-import { loadWall } from '../features/wall/wallSlice';
+import { loadWallAsync } from '../features/wall/wallSlice';
 import { MainMenu } from '../components/MainMenu';
 import { Home } from '../components/Home';
 import { BrickContainer } from '../features/brick/BrickContainer';
@@ -20,7 +20,7 @@ export const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(loadBrick());
-    dispatch(loadWall());
+    dispatch(loadWallAsync());
   });
   return (
     <Router>
