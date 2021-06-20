@@ -140,9 +140,9 @@ interface CourseComponentProps {
 
 export const CourseComponent: FC<CourseComponentProps> = (props) => {
   const { course, courseNumber, courseHeight, handleBrickClick, handleToggleGap, handleSelectSameBricks } = props;
-  const [isOpen, setOpen] = useState(false);
+  const [isSelected, setSelected] = useState(false);
 
-  const toogleOpen = () => setOpen(!isOpen);
+  const toggleSelected = () => setSelected(!isSelected);
 
   const brickItems = course.bricks.map((b: UIBrick) => {
     return (
@@ -152,10 +152,10 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
 
   const areAnyBricksSelected = course.bricks.some((b => b.isSelected));
   return (
-    <div className="collapse">
-      <input type="checkbox" id={`collapse-section-${course.id}`} aria-hidden="true" checked={isOpen} onChange={toogleOpen} />
+    <div className="">
+      <input type="checkbox" id={`select-course-${course.id}`} checked={isSelected} onChange={toggleSelected} />
       <label htmlFor={`collapse-section-${course.id}`} aria-hidden="true"><small>C{courseNumber} {courseHeight}mm</small></label>
-      {isOpen && <div>
+      <div>
         <div className="wall-widget__course">{brickItems}</div>
         {areAnyBricksSelected &&
         <BrickTools
@@ -164,7 +164,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
           handleToggleGap={handleToggleGap}
           handleSelectSameBricks={handleSelectSameBricks}
         />}
-      </div>}
+      </div>
     </div>
   );
 }
@@ -205,18 +205,13 @@ type WallWidgetProps = {
 }
 export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, saveWall }) => {
   const divEl = useRef(null);
-  const [collapseRows, setCollapseRows] = useState(false);
   const [selectedBrick, setSelectedBrick] = useState<UIBrick | null>(null);
   const { coursingChart } = wall;
-
-  // Collapse rows functionality
-  const handleCollapseRows = () => setCollapseRows(!collapseRows);
-  const collapseRowsClass = () => collapseRows ? 'wall-widget--collapse-rows' : '';
 
   const handleBrickClick = (brick: UIBrick, e:any): void => {
     console.log(`handleBrickClick: #${brick.id} isSelected: ${brick.isSelected}`);
     const isSelected = !brick.isSelected;
-    setSelectedBrick(isSelected ? brick : null);
+    setSelectedBrick(isSelected ? { ...brick, isSelected } : null);
     setCourses(updateBrickSelection(courses, [brick]));
   };
 
@@ -247,18 +242,9 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
   };
 
   return (
-    <div ref={divEl} className={`wall-widget ${collapseRowsClass()}`}>
+    <div ref={divEl} className="wall-widget">
       <div className="wall-widget__controls">
         <div className="row">
-          <div className="col-sm-4">
-            <input
-              type="checkbox"
-              autoComplete="off"
-              id="collapse-rows"
-              onChange={(e: any) => handleCollapseRows()}
-              checked={collapseRows}
-            /><label htmlFor="collapse-rows">Collapse rows</label>
-          </div>
           <div className="col-sm-4">
             <button className="" onClick={(e: any) => saveWall()}>Save</button>
           </div>

@@ -1,6 +1,6 @@
 // https://en.wikipedia.org/wiki/Brickwork
 $wiki_stretcher: #dc905c;
-$wiki_stretcher_border:#f6c2a7;
+$wiki_stretcher_border: #f6c2a7;
 $wiki_header: #a87d5d;
 $wiki_header_border: #cba390;
 $wiki_queen_closer: #bd9da2;
@@ -9,7 +9,6 @@ $wiki_queen_closer_border: #efd9dd;
 $active: blue;
 
 .wall-widget {
-
   .wall-widget__controls {
     margin-bottom: 1em;
   }
@@ -20,14 +19,14 @@ $active: blue;
     padding-left: 0;
 
     .wall-widget__row {
-
+      border-top: solid grey 1px;
       .wall-widget__course-stats {
         margin: 0 1em 0.2em 0;
       }
 
       .wall-widget__course {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-content: space-between;
         margin: 0.5em 1em 0.5em 0;
 
@@ -68,7 +67,6 @@ $active: blue;
 
   &.wall-widget--collapse-rows {
     .wall-widget__row {
-
       .collapse {
         margin: 0;
         & > input {
@@ -90,7 +88,7 @@ $active: blue;
         display: none;
       }
 
-      .wall-widget__course  {
+      .wall-widget__course {
         flex-wrap: nowrap;
         margin: 0;
 
