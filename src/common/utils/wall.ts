@@ -2,6 +2,7 @@ import { nanoid } from '@reduxjs/toolkit'
 import { findCoursingChartForBrickHeight, getDeltaHeights, getCourseHeight } from './coursing-chart';
 import { BondPattern } from '../constants/bonds';
 import { createBrickPalette, getCourseWidth } from './brick-palette';
+import { Brick } from '../types/brick';
 import { Wall } from '../types/wall';
 import { CoursingChart } from '../types/coursing-chart';
 import { BrickDimension } from '../types/brick-dimension';
@@ -139,9 +140,11 @@ export const getWallWidth = (wall: Wall): number => {
     return getCourseWidth(courses[0], brickPalette);
   }
   return 0;
-}
+};
 
 export const getWallHeight = (wall: Wall): number => {
   const { courses, coursingChart } = wall;
   return getCourseHeight(courses.length, coursingChart);
-}
+};
+
+export const isGap = (brick: Brick): boolean => /[a-z]/.test(brick.letter);

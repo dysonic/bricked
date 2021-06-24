@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import { WallWidget } from './WallWidget';
 import { WallSvg } from './WallSvg';
 import { WallTextForm } from './WallTextForm';
-import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall } from './wallSlice';
+import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall, loadWallAsync } from './wallSlice';
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 
@@ -13,13 +13,14 @@ const contextWidget = 'widget';
 const contextSource = 'source';
 const contextPreview = 'preview';
 
+let i = 1;
+
 const getActiveClass = (context: string, buttonContext: string): string  => context === buttonContext ? 'primary' : '';
 
 export interface UIBrick {
   id: string;
+  courseId: string;
   letter: string;
-  isGap: boolean;
-  isSelected: boolean;
 }
 
 export interface UICourse {
@@ -27,19 +28,16 @@ export interface UICourse {
   bricks:  Array<UIBrick>;
 }
 
-const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
-  if (!wall) {
-    return [];
-  }
+const mapWallToUIStates = (wall: Wall): Array<UICourse> => {
   const { courses } = wall;
   return courses.map((course): UICourse => {
+    const courseId = nanoid();
     return {
-      id: nanoid(),
+      id: courseId,
       bricks: course.split('').map((letter): UIBrick => ({
         id: nanoid(),
+        courseId: courseId,
         letter,
-        isSelected: false,
-        isGap: /[a-z]/.test(letter),
       })),
     };
   });
@@ -47,22 +45,25 @@ const mapWallToUIStates = (wall: Wall | null): Array<UICourse> => {
 
 const mapUIStatesToCourses = (courses: Array<UICourse>): Array<string> => {
   return courses.map(uiCourse => {
-    return uiCourse.bricks.map(b => b.isGap ? b.letter.toLowerCase() : b.letter).join('');
+    return uiCourse.bricks.map(b => b.letter).join('');
   });
 };
 
 export const EditWallContainer: FC<{}> = () => {
   const wall: Wall | null = useSelector(selectWall).current;
   const [context, setContext] = useState(contextWidget);
-  const [uiCourses, setUICourses] = useState<Array<UICourse>>(mapWallToUIStates(wall));
   const dispatch = useDispatch();
 
-  console.log('EditWallContainer render');
+  console.log(`render#${i++} - EditWallContainer`);
   if (!wall) {
     return (
       <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
     );
   }
+  const uiCourses: Array<UICourse> = mapWallToUIStates(wall);
+  const setUICourses = () => {
+    console.log('EditWallContainer setCourses');
+  };
 
   const isWidgetContext = () => context === contextWidget;
   const isSourceContext = () => context === contextSource;
