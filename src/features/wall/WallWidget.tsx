@@ -30,6 +30,8 @@ import { isGap } from '../../common/utils/wall';
 //   q: PASTEL_RED,
 // };
 
+let i = 1;
+
 const findCourseWithBrick = (brick: UIBrick, courses: Array<UICourse>): UICourse | undefined => {
   return courses.find(c => c.bricks.find(b => b.id === brick.id));
 };
@@ -60,11 +62,12 @@ export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClic
 interface BrickToolsProps {
   course: UICourse;
   selectedBricks: Array<UIBrick>;
+  isSelectSameBricksDisabled: boolean;
   handleToggleGap: Function;
   handleSelectSameBricks: Function;
 }
 
-export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, handleSelectSameBricks }) => {
+export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, isSelectSameBricksDisabled, handleSelectSameBricks }) => {
   const [selectSame, setSelectSame] = useState(false);
 
   const toogleSelectSame = () => {
@@ -76,7 +79,7 @@ export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, handl
   return (
     <div className="wall-widget__brick-tools">
       <div className="row">
-        <input type="checkbox" autoComplete="off" id="select-same" checked={selectSame} onChange={toogleSelectSame} />
+        <input type="checkbox" autoComplete="off" id="select-same" checked={selectSame} disabled={isSelectSameBricksDisabled} onChange={toogleSelectSame} />
         <label htmlFor="select-other-bricks">Select matching interior bricks</label>
       </div>
       <div className="row">
@@ -89,6 +92,7 @@ interface CourseComponentProps {
   course: UICourse;
   courseNumber: number;
   courseHeight: number;
+  isSelectSameBricksDisabled: boolean;
   handleBrickClick: Function;
   handleToggleGap: Function;
   handleSelectSameBricks: Function;
@@ -96,7 +100,16 @@ interface CourseComponentProps {
 }
 
 export const CourseComponent: FC<CourseComponentProps> = (props) => {
-  const { course, courseNumber, courseHeight, handleBrickClick, handleToggleGap, handleSelectSameBricks, determineIfBrickIsSelected } = props;
+  const {
+    course,
+    courseNumber,
+    courseHeight,
+    isSelectSameBricksDisabled,
+    handleBrickClick,
+    handleToggleGap,
+    handleSelectSameBricks,
+    determineIfBrickIsSelected,
+  } = props;
   const [isSelected, setSelected] = useState(false);
 
   const toggleSelected = () => setSelected(!isSelected);
@@ -117,6 +130,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
         {areAnyBricksSelected &&
         <BrickTools
           course={course}
+          isSelectSameBricksDisabled={isSelectSameBricksDisabled}
           selectedBricks={[]}
           handleToggleGap={handleToggleGap}
           handleSelectSameBricks={handleSelectSameBricks}
@@ -126,9 +140,18 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
   );
 }
 
+const determineIfIsSelectSameBricksDisabled = (selectedBricks: Array<UIBrick>): boolean => {
+  const brickLetters = selectedBricks.reduce((acc, brick) => {
+    acc.add(brick.letter);
+    return acc;
+  }, new Set<string>());
+  return brickLetters.size > 1;
+};
+
 interface RenderCourseOptions {
   courses: Array<UICourse>;
   coursingChart: CoursingChart;
+  isSelectSameBricksDisabled: boolean;
   handleBrickClick: Function;
   handleToggleGap: Function;
   handleSelectSameBricks: Function;
@@ -138,6 +161,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
   const {
     courses,
     coursingChart,
+    isSelectSameBricksDisabled,
     handleBrickClick,
     handleToggleGap,
     handleSelectSameBricks,
@@ -156,6 +180,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
           course={c}
           courseNumber={n}
           courseHeight={height}
+          isSelectSameBricksDisabled={isSelectSameBricksDisabled}
           handleBrickClick={handleBrickClick}
           handleToggleGap={handleToggleGap}
           handleSelectSameBricks={handleSelectSameBricks}
@@ -182,10 +207,14 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
   const [previouslySelectedBricks, setPreviouslySelectedBricks] = useState<Array<UIBrick>>([]);
   const { coursingChart } = wall;
 
+  console.log(`render#${i++} - WallWidget`);
+
   let courseMap = courses.reduce((acc, course) => {
     acc[course.id] = course;
     return acc;
   }, {} as Record<string, UICourse>);
+
+  const isSelectSameBricksDisabled = determineIfIsSelectSameBricksDisabled(selectedBricks);
 
   const determineIfBrickIsSelected = (brick: UIBrick): boolean => {
     return !!selectedBricks.find(b => b.id === brick.id);
@@ -249,6 +278,7 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
       {renderCourses({
         courses,
         coursingChart,
+        isSelectSameBricksDisabled,
         handleBrickClick,
         handleToggleGap,
         handleSelectSameBricks,
