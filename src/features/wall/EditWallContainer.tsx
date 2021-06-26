@@ -2,12 +2,14 @@ import React, { FC, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
+import md5 from 'md5';
 import { WallWidget } from './WallWidget';
 import { WallSvg } from './WallSvg';
 import { WallTextForm } from './WallTextForm';
 import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall, loadWallAsync } from './wallSlice';
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
+import { coursesToString, isGap } from '../../common/utils/wall';
 
 const contextWidget = 'widget';
 const contextSource = 'source';
@@ -22,7 +24,6 @@ export interface UIBrick {
   courseId: string;
   letter: string;
 }
-
 export interface UICourse {
   id: string,
   bricks:  Array<UIBrick>;
@@ -52,6 +53,8 @@ const mapUIStatesToCourses = (courses: Array<UICourse>): Array<string> => {
 export const EditWallContainer: FC<{}> = () => {
   const wall: Wall | null = useSelector(selectWall).current;
   const [context, setContext] = useState(contextWidget);
+  const [uiCourses, setUICourses] = useState<Array<UICourse>>([]);
+  const [prevKey, setPrevKey] = useState('');
   const dispatch = useDispatch();
 
   console.log(`render#${i++} - EditWallContainer`);
@@ -60,10 +63,18 @@ export const EditWallContainer: FC<{}> = () => {
       <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
     );
   }
-  const uiCourses: Array<UICourse> = mapWallToUIStates(wall);
-  const setUICourses = () => {
-    console.log('EditWallContainer setCourses');
-  };
+
+  // Initialise UI state
+  const key = md5(coursesToString(wall));
+  if (key !== prevKey) {
+    setUICourses(mapWallToUIStates(wall));
+    setPrevKey(key);
+  }
+
+  // const uiCourses: Array<UICourse> = mapWallToUIStates(wall);
+  // const setUICourses = () => {
+  //   console.log('EditWallContainer setCourses');
+  // };
 
   const isWidgetContext = () => context === contextWidget;
   const isSourceContext = () => context === contextSource;
@@ -73,6 +84,28 @@ export const EditWallContainer: FC<{}> = () => {
   // Style bricks to match dimensions.
   const brickRatio: BrickRatio = getRatios(wall);
   addBrickPaletteClasses(brickRatio);
+
+  const handleToggleGap = (bricks: Array<UIBrick>): void => {
+    const brickLetter = bricks[0].letter;
+    const newIsGap = !isGap(brickLetter);
+    const newLetter = newIsGap ? brickLetter.toLowerCase() : brickLetter.toUpperCase();
+    const brickIds = bricks.map(b => b.id);
+
+    console.log(`handleToggleGap: newIsGap: ${newIsGap}`);
+    const newUiCourses = uiCourses.map(uiCourse => {
+      return {
+        ...uiCourse,
+        bricks: uiCourse.bricks.map(b => {
+          const letter = brickIds.includes(b.id) ? newLetter : b.letter;
+          return {
+            ...b,
+            letter,
+          };
+        }),
+      };
+    });
+    setUICourses(newUiCourses);
+  };
 
   const handleSaveWall = () => {
     console.log('handleSaveWall');
@@ -94,9 +127,16 @@ export const EditWallContainer: FC<{}> = () => {
           </div>
       </div>
       <div>
-        {isWidgetContext() && <WallWidget wall={wall} courses={uiCourses} setCourses={setUICourses} saveWall={handleSaveWall} />}
-        {isSourceContext() && <WallTextForm wall={wall} />}
-        {isPreviewContext() && <WallSvg wall={wall} />}
+        {isWidgetContext() && <WallWidget
+          key={key}
+          wall={wall}
+          courses={uiCourses}
+          setCourses={setUICourses}
+          handleToggleGap={handleToggleGap}
+          saveWall={handleSaveWall}
+        />}
+        {isSourceContext() && <WallTextForm key={key} wall={wall} />}
+        {isPreviewContext() && <WallSvg key={key} wall={wall} />}
       </div>
     </div>
   );

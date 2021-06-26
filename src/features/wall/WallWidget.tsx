@@ -53,7 +53,7 @@ export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClic
   const isSelected = determineIfBrickIsSelected(brick);
   return (
     <div
-      className={`wall-widget__brick wall-widget__brick--${brick.letter.toLowerCase()} ${isSelected ? 'wall-widget__brick--active' : ''} ${isGap(brick) ? 'wall-widget__brick--gap' : ''}`}
+      className={`wall-widget__brick wall-widget__brick--${brick.letter.toLowerCase()} ${isSelected ? 'wall-widget__brick--active' : ''} ${isGap(brick.letter) ? 'wall-widget__brick--gap' : ''}`}
       onClick={(e:any) => handleBrickClick(brick, e)}
     />
   );
@@ -61,13 +61,12 @@ export const BrickComponent: FC<BrickComponentProps> = ({ brick, handleBrickClic
 
 interface BrickToolsProps {
   course: UICourse;
-  selectedBricks: Array<UIBrick>;
   isSelectSameBricksDisabled: boolean;
-  handleToggleGap: Function;
+  handleToggleGapClick: Function;
   handleSelectSameBricks: Function;
 }
 
-export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, isSelectSameBricksDisabled, handleSelectSameBricks }) => {
+export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGapClick, isSelectSameBricksDisabled, handleSelectSameBricks }) => {
   const [selectSame, setSelectSame] = useState(false);
 
   const toogleSelectSame = () => {
@@ -83,7 +82,7 @@ export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGap, isSel
         <label htmlFor="select-other-bricks">Select matching interior bricks</label>
       </div>
       <div className="row">
-        <button onClick={(e:any) => handleToggleGap()}>Toggle gap</button>
+        <button onClick={(e:any) => handleToggleGapClick()}>Toggle gap</button>
       </div>
     </div>
   );
@@ -94,7 +93,7 @@ interface CourseComponentProps {
   courseHeight: number;
   isSelectSameBricksDisabled: boolean;
   handleBrickClick: Function;
-  handleToggleGap: Function;
+  handleToggleGapClick: Function;
   handleSelectSameBricks: Function;
   determineIfBrickIsSelected: Function;
 }
@@ -106,7 +105,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
     courseHeight,
     isSelectSameBricksDisabled,
     handleBrickClick,
-    handleToggleGap,
+    handleToggleGapClick,
     handleSelectSameBricks,
     determineIfBrickIsSelected,
   } = props;
@@ -131,8 +130,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
         <BrickTools
           course={course}
           isSelectSameBricksDisabled={isSelectSameBricksDisabled}
-          selectedBricks={[]}
-          handleToggleGap={handleToggleGap}
+          handleToggleGapClick={handleToggleGapClick}
           handleSelectSameBricks={handleSelectSameBricks}
         />}
       </div>
@@ -153,7 +151,7 @@ interface RenderCourseOptions {
   coursingChart: CoursingChart;
   isSelectSameBricksDisabled: boolean;
   handleBrickClick: Function;
-  handleToggleGap: Function;
+  handleToggleGapClick: Function;
   handleSelectSameBricks: Function;
   determineIfBrickIsSelected: Function;
 }
@@ -163,7 +161,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
     coursingChart,
     isSelectSameBricksDisabled,
     handleBrickClick,
-    handleToggleGap,
+    handleToggleGapClick,
     handleSelectSameBricks,
     determineIfBrickIsSelected,
   } = options;
@@ -182,7 +180,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
           courseHeight={height}
           isSelectSameBricksDisabled={isSelectSameBricksDisabled}
           handleBrickClick={handleBrickClick}
-          handleToggleGap={handleToggleGap}
+          handleToggleGapClick={handleToggleGapClick}
           handleSelectSameBricks={handleSelectSameBricks}
           determineIfBrickIsSelected={determineIfBrickIsSelected}
         />
@@ -200,9 +198,10 @@ type WallWidgetProps = {
   wall: Wall;
   courses: Array<UICourse>;
   setCourses: Function;
+  handleToggleGap: Function;
   saveWall: Function;
 }
-export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, saveWall }) => {
+export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap, saveWall }) => {
   const [selectedBricks, setSelectedBricks] = useState<Array<UIBrick>>([]);
   const [previouslySelectedBricks, setPreviouslySelectedBricks] = useState<Array<UIBrick>>([]);
   const { coursingChart } = wall;
@@ -225,10 +224,13 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
     console.log(`handleBrickClick: #${brick.id} isSelected: ${isBrickSelected}`);
     let newSelection: Array<UIBrick>;
     if (isBrickSelected) {
-      // Deselect
+
+      // Deselect brick
       newSelection = selectedBricks.filter(b => b.id !== brick.id);
     } else {
-      // Select, first deselect bricks that aren't in the same course
+
+      // Select brick
+      // First deselect bricks that aren't in the same course
       newSelection = selectedBricks.filter(b => b.courseId === brick.courseId);
       newSelection.push(brick);
     }
@@ -254,17 +256,9 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
     setSelectedBricks(previouslySelectedBricks);
   };
 
-  // const handleToggleGap = (): void => {
-  //   const selectedBricks = getSelectedBricks(courses);
-  //   if (!selectedBricks.length) {
-  //     return;
-  //   }
-  //   const desiredVisibility = !selectedBricks[0].isGap;
-  //   console.log(`handleToggleGap: desiredVisibilty: ${desiredVisibility}`);
-  //   selectedBricks.forEach(b => b.isGap = desiredVisibility);
-  //   setCourses(updateBrickStates(courses, selectedBricks));
-  // };
-  const handleToggleGap = (): void => {};
+  const handleToggleGapClick = () => {
+    handleToggleGap(selectedBricks);
+  };
 
   return (
     <div className="wall-widget">
@@ -280,7 +274,7 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, setCourses, sav
         coursingChart,
         isSelectSameBricksDisabled,
         handleBrickClick,
-        handleToggleGap,
+        handleToggleGapClick,
         handleSelectSameBricks,
         determineIfBrickIsSelected,
       })}

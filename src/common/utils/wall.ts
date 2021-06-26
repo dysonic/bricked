@@ -147,4 +147,8 @@ export const getWallHeight = (wall: Wall): number => {
   return getCourseHeight(courses.length, coursingChart);
 };
 
-export const isGap = (brick: Brick): boolean => /[a-z]/.test(brick.letter);
+export const coursesToString =  (wall: Wall): string => {
+  return wall.courses.join('');
+}
+
+export const isGap = (brickLetter: string): boolean => /[a-z]/.test(brickLetter);
