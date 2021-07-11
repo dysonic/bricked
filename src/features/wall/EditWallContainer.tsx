@@ -10,6 +10,7 @@ import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall, loa
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 import { coursesToString, isGap } from '../../common/utils/wall';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 const contextWidget = 'widget';
 const contextSource = 'source';
@@ -44,10 +45,12 @@ const mapWallToUIStates = (wall: Wall): Array<UICourse> => {
   });
 };
 
-const mapUIStatesToCourses = (courses: Array<UICourse>): Array<string> => {
-  return courses.map(uiCourse => {
-    return uiCourse.bricks.map(b => b.letter).join('');
-  });
+const mapUICoursesToCourses = (courses: Array<UICourse>): Array<string> => {
+  return courses.map(uiCourse => mapUICourseToCourse(uiCourse));
+};
+
+const mapUICourseToCourse = (uiCourse: UICourse): string => {
+  return uiCourse.bricks.map(b => b.letter).join('');
 };
 
 export const EditWallContainer: FC<{}> = () => {
@@ -107,9 +110,43 @@ export const EditWallContainer: FC<{}> = () => {
     setUICourses(newUiCourses);
   };
 
+  const handleFillToTop = (selectedCourses: Array<UICourse>): void => {
+    console.log(`handleFillToTop: selectedCourses: #${selectedCourses.length}`);
+    if (selectedCourses.length === 0) {
+      return;
+    }
+
+    // Courses can be selected in a random order. Match the wall order.
+    const selectedCourseIds = selectedCourses.map(c => c.id);
+    const sortedSelectedCourses = uiCourses.filter(c => selectedCourseIds.includes(c.id));
+    const lastSelectedCourse = sortedSelectedCourses[sortedSelectedCourses.length-1];
+    const lastIndex = uiCourses.findIndex(c => c.id === lastSelectedCourse.id);
+    if (lastIndex === -1) {
+      return;
+    }
+    const replaceFromIndex = lastIndex+1;
+    console.log(`handleFillToTop: replaceFromIndex: ${replaceFromIndex}`);
+
+    let newCourses: Array<string> = [];
+    if (replaceFromIndex > 0) {
+      newCourses = wall.courses.slice(0, replaceFromIndex);
+    }
+    const selectedCourseStrings = mapUICoursesToCourses(sortedSelectedCourses);
+    let j: number = 0;
+    const numberOfCourses = wall.courses.length;
+    for (let i: number = replaceFromIndex; i < numberOfCourses; i++) {
+      newCourses.push(selectedCourseStrings[j]);
+      j++;
+      if (j > selectedCourseStrings.length) {
+        j = 0;
+      }
+    }
+    dispatch(wallSlice.actions.updateWallCourses(newCourses));
+  };
+
   const handleSaveWall = () => {
     console.log('handleSaveWall');
-    const courses = mapUIStatesToCourses(uiCourses);
+    const courses = mapUICoursesToCourses(uiCourses);
     // dispatch(wallSlice.actions.updateWallCourses(courses));
     // dispatch(saveWallAsync(wall));
 
@@ -134,6 +171,7 @@ export const EditWallContainer: FC<{}> = () => {
           setCourses={setUICourses}
           handleToggleGap={handleToggleGap}
           saveWall={handleSaveWall}
+          handleFillToTop={handleFillToTop}
         />}
         {isSourceContext() && <WallTextForm key={key} wall={wall} />}
         {isPreviewContext() && <WallSvg key={key} wall={wall} />}

@@ -36,10 +36,6 @@ import {
 
 let i = 1;
 
-const findCourseWithBrick = (brick: UIBrick, courses: Array<UICourse>): UICourse | undefined => {
-  return courses.find(c => c.bricks.find(b => b.id === brick.id));
-};
-
 const findSameBricksInCourse = (brick: UIBrick, course:UICourse, excludeEnds: boolean = true): Array<UIBrick> => {
   const lastIndex = course.bricks.length - 1;
   const isNotEndBrick = (i: number): boolean => {
@@ -91,6 +87,22 @@ export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGapClick, 
     </div>
   );
 }
+
+interface CourseToolsProps {
+  course: UICourse;
+  // handleFillToTopClick(ev: React.MouseEvent<HTMLButtonElement>): void;
+  handleFillToTopClick: Function;
+}
+export const CourseTools: FC<CourseToolsProps> = ({ course, handleFillToTopClick }) => {
+  return (
+    <div className="wall-widget__course-tools">
+      <div className="row">
+        <button onClick={(ev: any) => handleFillToTopClick()}>Fill to top</button>
+      </div>
+    </div>
+  );
+};
+
 interface CourseComponentProps {
   course: UICourse;
   courseNumber: number;
@@ -105,6 +117,7 @@ interface CourseComponentProps {
   determineIfCourseIsSelected: Function;
   minSelectedIndex: number;
   maxSelectedIndex: number;
+  handleFillToTopClick: Function;
 }
 
 export const CourseComponent: FC<CourseComponentProps> = (props) => {
@@ -122,6 +135,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
     determineIfCourseIsSelected,
     minSelectedIndex,
     maxSelectedIndex,
+    handleFillToTopClick
   } = props;
 
   const brickItems = course.bricks.map((b: UIBrick) => {
@@ -133,6 +147,7 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
   const areAnyBricksSelected = course.bricks.some(b => determineIfBrickIsSelected(b));
   const isCourseSelected = determineIfCourseIsSelected(course);
   const isSelectCourseDisabled = determineIsSelectCourseDisabled(index, minSelectedIndex, maxSelectedIndex);
+  const showCourseTools = index === minSelectedIndex;
   return (
     <div className="">
       <div className="wall-widget__select-course">
@@ -149,6 +164,11 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
           handleSelectSameBricks={handleSelectSameBricks}
         />}
       </div>
+      {showCourseTools &&
+        <CourseTools
+        course={course}
+        handleFillToTopClick={handleFillToTopClick}
+      />}
     </div>
   );
 }
@@ -173,6 +193,7 @@ interface RenderCourseOptions {
   determineIfCourseIsSelected: Function;
   minSelectedIndex: number;
   maxSelectedIndex: number;
+  handleFillToTopClick: Function;
 }
 const renderCourses = (options: RenderCourseOptions): JSX.Element => {
   const {
@@ -187,6 +208,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
     determineIfCourseIsSelected,
     minSelectedIndex,
     maxSelectedIndex,
+    handleFillToTopClick,
   } = options;
   const reversedCourses = [...courses].reverse();
   const numberOfCourses = courses.length;
@@ -211,7 +233,7 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
           determineIfCourseIsSelected={determineIfCourseIsSelected}
           minSelectedIndex={minSelectedIndex}
           maxSelectedIndex={maxSelectedIndex}
-
+          handleFillToTopClick={handleFillToTopClick}
         />
       </li>
     );
@@ -229,8 +251,9 @@ type WallWidgetProps = {
   setCourses: Function;
   handleToggleGap: Function;
   saveWall: Function;
+  handleFillToTop: Function,
 }
-export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap, saveWall }) => {
+export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap, saveWall, handleFillToTop }) => {
   const [selectedBricks, setSelectedBricks] = useState<Array<UIBrick>>([]);
   const [previouslySelectedBricks, setPreviouslySelectedBricks] = useState<Array<UIBrick>>([]);
   const [selectedCourses, setSelectedCourses] = useState<Array<UICourse>>([]);
@@ -313,6 +336,10 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap
   const [minSelectedIndex, maxSelectedIndex] = determineSelectedCourseIndexRange(courses, selectedCourses);
   console.log('minSelectedIndex:', minSelectedIndex, 'maxSelectedIndex:', maxSelectedIndex);
 
+  const handleFillToTopClick = () => {
+    handleFillToTop(selectedCourses);
+  }
+
   return (
     <div className="wall-widget">
       <div className="wall-widget__controls">
@@ -334,6 +361,7 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap
         determineIfCourseIsSelected,
         minSelectedIndex,
         maxSelectedIndex,
+        handleFillToTopClick,
       })}
     </div>
   );
