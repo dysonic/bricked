@@ -5,6 +5,10 @@ import { getCourseHeight } from '../../common/utils/coursing-chart';
 import { CoursingChart } from '../../common/types/coursing-chart';
 import { UICourse, UIBrick } from './EditWallContainer';
 import { isGap } from '../../common/utils/wall';
+import {
+  determineSelectedCourseIndexRange,
+  determineIsSelectCourseDisabled,
+ } from '../../common/utils/wall-widget';
 
 // // https://www.color-hex.com/color-palette/5361
 // const PASTEL_RED: string = '#ffb3ba';
@@ -90,28 +94,35 @@ export const BrickTools: FC<BrickToolsProps> = ({ course, handleToggleGapClick, 
 interface CourseComponentProps {
   course: UICourse;
   courseNumber: number;
+  index: number;
   courseHeight: number;
   isSelectSameBricksDisabled: boolean;
   handleBrickClick: Function;
   handleToggleGapClick: Function;
   handleSelectSameBricks: Function;
   determineIfBrickIsSelected: Function;
+  handleSelectCourseChange: Function;
+  determineIfCourseIsSelected: Function;
+  minSelectedIndex: number;
+  maxSelectedIndex: number;
 }
 
 export const CourseComponent: FC<CourseComponentProps> = (props) => {
   const {
     course,
     courseNumber,
+    index,
     courseHeight,
     isSelectSameBricksDisabled,
     handleBrickClick,
     handleToggleGapClick,
     handleSelectSameBricks,
     determineIfBrickIsSelected,
+    handleSelectCourseChange,
+    determineIfCourseIsSelected,
+    minSelectedIndex,
+    maxSelectedIndex,
   } = props;
-  const [isSelected, setSelected] = useState(false);
-
-  const toggleSelected = () => setSelected(!isSelected);
 
   const brickItems = course.bricks.map((b: UIBrick) => {
     return (
@@ -120,10 +131,14 @@ export const CourseComponent: FC<CourseComponentProps> = (props) => {
   });
 
   const areAnyBricksSelected = course.bricks.some(b => determineIfBrickIsSelected(b));
+  const isCourseSelected = determineIfCourseIsSelected(course);
+  const isSelectCourseDisabled = determineIsSelectCourseDisabled(index, minSelectedIndex, maxSelectedIndex);
   return (
     <div className="">
-      <input type="checkbox" id={`select-course-${course.id}`} checked={isSelected} onChange={toggleSelected} />
-      <label htmlFor={`collapse-section-${course.id}`} aria-hidden="true"><small>C{courseNumber} {courseHeight}mm</small></label>
+      <div className="wall-widget__select-course">
+        <input type="checkbox" id={`select-course-${course.id}`} checked={isCourseSelected} disabled={isSelectCourseDisabled} onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => { handleSelectCourseChange(course, ev) }} />
+        <label htmlFor={`collapse-section-${course.id}`} aria-hidden="true"><small>C{courseNumber} {courseHeight}mm</small></label>
+      </div>
       <div>
         <div className="wall-widget__course">{brickItems}</div>
         {areAnyBricksSelected &&
@@ -154,6 +169,10 @@ interface RenderCourseOptions {
   handleToggleGapClick: Function;
   handleSelectSameBricks: Function;
   determineIfBrickIsSelected: Function;
+  handleSelectCourseChange: Function;
+  determineIfCourseIsSelected: Function;
+  minSelectedIndex: number;
+  maxSelectedIndex: number;
 }
 const renderCourses = (options: RenderCourseOptions): JSX.Element => {
   const {
@@ -164,6 +183,10 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
     handleToggleGapClick,
     handleSelectSameBricks,
     determineIfBrickIsSelected,
+    handleSelectCourseChange,
+    determineIfCourseIsSelected,
+    minSelectedIndex,
+    maxSelectedIndex,
   } = options;
   const reversedCourses = [...courses].reverse();
   const numberOfCourses = courses.length;
@@ -177,12 +200,18 @@ const renderCourses = (options: RenderCourseOptions): JSX.Element => {
         <CourseComponent
           course={c}
           courseNumber={n}
+          index={n-1}
           courseHeight={height}
           isSelectSameBricksDisabled={isSelectSameBricksDisabled}
           handleBrickClick={handleBrickClick}
           handleToggleGapClick={handleToggleGapClick}
           handleSelectSameBricks={handleSelectSameBricks}
           determineIfBrickIsSelected={determineIfBrickIsSelected}
+          handleSelectCourseChange={handleSelectCourseChange}
+          determineIfCourseIsSelected={determineIfCourseIsSelected}
+          minSelectedIndex={minSelectedIndex}
+          maxSelectedIndex={maxSelectedIndex}
+
         />
       </li>
     );
@@ -204,6 +233,7 @@ type WallWidgetProps = {
 export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap, saveWall }) => {
   const [selectedBricks, setSelectedBricks] = useState<Array<UIBrick>>([]);
   const [previouslySelectedBricks, setPreviouslySelectedBricks] = useState<Array<UIBrick>>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Array<UICourse>>([]);
   const { coursingChart } = wall;
 
   console.log(`render#${i++} - WallWidget`);
@@ -217,6 +247,10 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap
 
   const determineIfBrickIsSelected = (brick: UIBrick): boolean => {
     return !!selectedBricks.find(b => b.id === brick.id);
+  };
+
+  const determineIfCourseIsSelected = (course: UICourse): boolean => {
+    return !!selectedCourses.find(c => c.id === course.id);
   };
 
   const handleBrickClick = (brick: UIBrick, e:any): void => {
@@ -260,6 +294,25 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap
     handleToggleGap(selectedBricks);
   };
 
+  const handleSelectCourseChange = (course: UICourse, e:any) => {
+    const isCourseSelected = determineIfCourseIsSelected(course);
+    console.log(`handleSelectCourseChange: #${course.id} isSelected: ${isCourseSelected}`);
+    let newSelection: Array<UICourse> = [];
+    if (isCourseSelected) {
+
+      // Deselect course
+      newSelection = selectedCourses.filter(c => c.id !== course.id);
+    } else {
+
+      // Select course
+      newSelection = selectedCourses.concat(course);
+    }
+    setSelectedCourses(newSelection);
+  }
+
+  const [minSelectedIndex, maxSelectedIndex] = determineSelectedCourseIndexRange(courses, selectedCourses);
+  console.log('minSelectedIndex:', minSelectedIndex, 'maxSelectedIndex:', maxSelectedIndex);
+
   return (
     <div className="wall-widget">
       <div className="wall-widget__controls">
@@ -277,6 +330,10 @@ export const WallWidget: FC<WallWidgetProps> = ({ wall, courses, handleToggleGap
         handleToggleGapClick,
         handleSelectSameBricks,
         determineIfBrickIsSelected,
+        handleSelectCourseChange,
+        determineIfCourseIsSelected,
+        minSelectedIndex,
+        maxSelectedIndex,
       })}
     </div>
   );

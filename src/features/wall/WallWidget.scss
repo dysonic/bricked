@@ -9,92 +9,98 @@ $wiki_queen_closer_border: #efd9dd;
 $active: blue;
 
 .wall-widget {
-  .wall-widget__controls {
-    margin-bottom: 1em;
-  }
-
   ul {
     list-style: none;
     margin: 0;
     padding-left: 0;
+  }
+}
 
-    .wall-widget__row {
-      border-top: solid grey 1px;
-      .wall-widget__course-stats {
-        margin: 0 1em 0.2em 0;
-      }
+.wall-widget__select-course {
+  display: flex;
+  align-items: center;
+}
 
-      .wall-widget__course {
-        display: flex;
-        flex-wrap: nowrap;
-        align-content: space-between;
-        margin: 0.5em 1em 0.5em 0;
+.wall-widget__course-stats {
+  margin: 0 1em 0.2em 0;
+}
 
-        .wall-widget__brick {
-          text-align: center;
-          margin-bottom: 0.5em;
+.wall-widget__controls {
+  margin-bottom: 1em;
+}
 
-          border: solid 1px transparent;
+.wall-widget__row {
+  border-top: solid grey 1px;
+}
 
-          &.wall-widget__brick--h {
-            background-color: $wiki_header;
-            border-color: $wiki_header_border;
-          }
+.wall-widget__course {
+  display: flex;
+  flex-wrap: nowrap;
+  align-content: space-between;
+  margin: 0.5em 1em 0.5em 0;
+}
 
-          &.wall-widget__brick--s {
-            background-color: $wiki_stretcher;
-            border-color: $wiki_stretcher_border;
-          }
+.wall-widget__brick {
+  text-align: center;
+  margin-bottom: 0.5em;
 
-          &.wall-widget__brick--q {
-            background-color: $wiki_queen_closer;
-            border-color: $wiki_queen_closer_border;
-          }
+  border: solid 1px transparent;
 
-          &.wall-widget__brick--gap {
-            border-color: transparent;
-            background-color: transparent !important;
-          }
-
-          &.wall-widget__brick--active {
-            border-color: $active;
-            background-color: $active;
-          }
-        }
-      }
-    }
+  &.wall-widget__brick--h {
+    background-color: $wiki_header;
+    border-color: $wiki_header_border;
   }
 
-  &.wall-widget--collapse-rows {
-    .wall-widget__row {
-      .collapse {
-        margin: 0;
-        & > input {
-          display: none;
-        }
-        & > label {
-          display: none;
-        }
-        & > div {
-          padding: 0;
-          border: none;
-        }
-        .wall-widget__brick-tools {
-          display: none;
-        }
-      }
+  &.wall-widget__brick--s {
+    background-color: $wiki_stretcher;
+    border-color: $wiki_stretcher_border;
+  }
 
-      .wall-widget__course-stats {
+  &.wall-widget__brick--q {
+    background-color: $wiki_queen_closer;
+    border-color: $wiki_queen_closer_border;
+  }
+
+  &.wall-widget__brick--gap {
+    border-color: transparent;
+    background-color: transparent !important;
+  }
+
+  &.wall-widget__brick--active {
+    border-color: $active;
+    background-color: $active;
+  }
+}
+
+.wall-widget.wall-widget--collapse-rows {
+  .wall-widget__row {
+    .collapse {
+      margin: 0;
+      & > input {
         display: none;
       }
+      & > label {
+        display: none;
+      }
+      & > div {
+        padding: 0;
+        border: none;
+      }
+      .wall-widget__brick-tools {
+        display: none;
+      }
+    }
 
-      .wall-widget__course {
-        flex-wrap: nowrap;
-        margin: 0;
+    .wall-widget__course-stats {
+      display: none;
+    }
 
-        .wall-widget__brick {
-          margin-bottom: 0;
-        }
+    .wall-widget__course {
+      flex-wrap: nowrap;
+      margin: 0;
+
+      .wall-widget__brick {
+        margin-bottom: 0;
       }
     }
   }
