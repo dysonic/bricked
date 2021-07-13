@@ -10,7 +10,6 @@ import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall, loa
 import { Wall } from '../../common/types/wall';
 import { BrickRatio, getRatios, addBrickPaletteClasses } from '../../common/utils/brick-palette';
 import { coursesToString, isGap } from '../../common/utils/wall';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 const contextWidget = 'widget';
 const contextSource = 'source';
@@ -137,10 +136,12 @@ export const EditWallContainer: FC<{}> = () => {
     for (let i: number = replaceFromIndex; i < numberOfCourses; i++) {
       newCourses.push(selectedCourseStrings[j]);
       j++;
-      if (j > selectedCourseStrings.length) {
+      if (j === selectedCourseStrings.length) {
         j = 0;
       }
     }
+
+    // console.log('newCourses:', newCourses);
     dispatch(wallSlice.actions.updateWallCourses(newCourses));
   };
 
