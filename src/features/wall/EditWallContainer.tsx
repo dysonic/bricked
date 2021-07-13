@@ -128,7 +128,7 @@ export const EditWallContainer: FC<{}> = () => {
 
     let newCourses: Array<string> = [];
     if (replaceFromIndex > 0) {
-      newCourses = wall.courses.slice(0, replaceFromIndex);
+      newCourses = mapUICoursesToCourses(uiCourses.slice(0, replaceFromIndex));
     }
     const selectedCourseStrings = mapUICoursesToCourses(sortedSelectedCourses);
     let j: number = 0;

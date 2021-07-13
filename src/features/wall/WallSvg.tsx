@@ -4,15 +4,28 @@ import { Wall } from '../../common/types/wall';
 import { getWallWidth, getWallHeight } from  '../../common/utils/wall';
 import { getCourseHeight } from '../../common/utils/coursing-chart';
 import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../../common/constants';
+import { isGap } from '../../common/utils/wall';
 
 const drawBrickAndReturnNewX = (b: string, wall: Wall, x:number, y:number, svgContainer: SVGSVGElement): number => {
   const path = d3.path();
-  const width = wall.brickPalette[b];
-  path.rect(x, y, width, wall.brickDimension.height);
-  d3.select(svgContainer).append('path')
-    .style('stroke', 'none')
-    .style('fill', BRICK_COLOR)
-    .attr('d', path.toString());
+  const brickIsGap = isGap(b);
+  const width = wall.brickPalette[b.toUpperCase()];
+
+  if (brickIsGap) {
+    const gapX = x - MORTAR_THICKNESS;
+    const gapWidth = width + (2 * MORTAR_THICKNESS);
+    path.rect(gapX, y, gapWidth, wall.brickDimension.height);
+    d3.select(svgContainer).append('path')
+      .style('stroke', 'none')
+      .style('fill', '#ffffff')
+      .attr('d', path.toString());
+  } else{
+    path.rect(x, y, width, wall.brickDimension.height);
+    d3.select(svgContainer).append('path')
+      .style('stroke', 'none')
+      .style('fill', BRICK_COLOR)
+      .attr('d', path.toString());
+  }
   return x + width + MORTAR_THICKNESS;
 };
 
@@ -42,7 +55,6 @@ const drawWall = (svgContainer: SVGSVGElement | null, wall: Wall, wallWidth: num
   });
 };
 
-
 interface WallSvgProps {
   wall: Wall;
 };
@@ -59,7 +71,7 @@ export const WallSvg: FC<WallSvgProps> = ({ wall }) => {
 
   // var svgContainer = d3.select("body").append("svg").attr("width", 200).attr("height", 200);
   return (
-    <svg ref={svgEl} id={id} className="wall" width="500" viewBox={`0 0 ${width} ${height}`} />
+    <svg ref={svgEl} id={id} className="wall" width="100%" viewBox={`0 0 ${width} ${height}`} />
   );
 };
 
