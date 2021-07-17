@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import md5 from 'md5';
 import { WallWidget } from './WallWidget';
 import { WallSvg } from './WallSvg';
+import { Wall3D } from './Wall3D';
 import { WallTextForm } from './WallTextForm';
 import { selectWall, wallSlice, saveWallAsync, updateWallCoursesAndSaveWall, loadWallAsync } from './wallSlice';
 import { Wall } from '../../common/types/wall';
@@ -14,10 +15,16 @@ import { coursesToString, isGap } from '../../common/utils/wall';
 const contextWidget = 'widget';
 const contextSource = 'source';
 const contextPreview = 'preview';
+const contextRender = 'render';
 
-let i = 1;
+const isWidgetContext = (context :string) => context === contextWidget;
+const isSourceContext = (context :string) => context === contextSource;
+const isPreviewContext = (context :string) => context === contextPreview;
+const isRenderContext = (context :string) => context === contextRender;
 
 const getActiveClass = (context: string, buttonContext: string): string  => context === buttonContext ? 'primary' : '';
+
+let i = 1;
 
 export interface UIBrick {
   id: string;
@@ -59,7 +66,7 @@ export const EditWallContainer: FC<{}> = () => {
   const [prevKey, setPrevKey] = useState('');
   const dispatch = useDispatch();
 
-  console.log(`render#${i++} - EditWallContainer`);
+  console.log(`render#${i++} - EditWallContainer [${context}]`);
   if (!wall) {
     return (
       <p>You need to <Link to="/build-wall">build a wall</Link> before you can edit it.</p>
@@ -77,10 +84,6 @@ export const EditWallContainer: FC<{}> = () => {
   // const setUICourses = () => {
   //   console.log('EditWallContainer setCourses');
   // };
-
-  const isWidgetContext = () => context === contextWidget;
-  const isSourceContext = () => context === contextSource;
-  const isPreviewContext = () => context === contextPreview;
 
   // Initial set up for <WallWidget />.
   // Style bricks to match dimensions.
@@ -162,10 +165,11 @@ export const EditWallContainer: FC<{}> = () => {
             <button className={getActiveClass(context, contextWidget)} onClick={(e: any) => setContext(contextWidget)}>Widget</button>
             <button className={getActiveClass(context, contextSource)} onClick={(e: any) => setContext(contextSource)}>Source</button>
             <button className={getActiveClass(context, contextPreview)} onClick={(e: any) => setContext(contextPreview)}>Preview</button>
+            <button className={getActiveClass(context, contextRender)} onClick={(e: any) => setContext(contextRender)}>Render</button>
           </div>
       </div>
       <div>
-        {isWidgetContext() && <WallWidget
+        {isWidgetContext(context) && <WallWidget
           key={key}
           wall={wall}
           courses={uiCourses}
@@ -174,8 +178,9 @@ export const EditWallContainer: FC<{}> = () => {
           saveWall={handleSaveWall}
           handleFillToTop={handleFillToTop}
         />}
-        {isSourceContext() && <WallTextForm key={key} wall={wall} />}
-        {isPreviewContext() && <WallSvg key={key} wall={wall} />}
+        {isSourceContext(context) && <WallTextForm key={key} wall={wall} />}
+        {isPreviewContext(context) && <WallSvg key={key} wall={wall} />}
+        {isRenderContext(context) && <Wall3D key={key} wall={wall} />}
       </div>
     </div>
   );
