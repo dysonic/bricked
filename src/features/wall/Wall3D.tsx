@@ -6,14 +6,13 @@ import { getWallWidth, getWallHeight } from  '../../common/utils/wall';
 import { getCourseHeight } from '../../common/utils/coursing-chart';
 import { MORTAR_THICKNESS, BRICK_COLOR, MORTAR_COLOR } from '../../common/constants';
 import { isGap } from '../../common/utils/wall';
+import { Vector3 } from 'three';
 
 interface GetWallGeometryOptions {
   wall: Wall;
   width: number;
   height: number;
   depth: number;
-  halfWidth: number;
-  halfHeight: number;
 }
 
 const createRectShape = (x: number, y: number, width: number, height: number): THREE.Shape => {
@@ -22,6 +21,7 @@ const createRectShape = (x: number, y: number, width: number, height: number): T
   // bottom left corner
   rect.moveTo(x, y);
 
+  // draw counter-clockwise
   rect.lineTo(x, y + height);
   rect.lineTo(x + width, y + height);
   rect.lineTo(x + width, y);
@@ -30,14 +30,12 @@ const createRectShape = (x: number, y: number, width: number, height: number): T
   return rect;
 }
 const getWallGeometry = (options: GetWallGeometryOptions): any => {
-  const { wall, width, height, depth, halfWidth, halfHeight } = options;
-	// const wallGeometry = new THREE.PlaneGeometry(wallWidth, wallHeight);
+  const { wall, width, height, depth } = options;
 
   // Wall
-  const wallShape = createRectShape(-halfWidth, -halfHeight, width, height);
-  // const geometry = new THREE.ShapeGeometry(wallShape);
+  const wallShape = createRectShape(0, 0, width, height);
 
-  // Add brick gaps (holes) to wall
+  // Add brick gaps (holes) to wall shape
   const gapHeight = wall.brickDimension.height + MORTAR_THICKNESS;
   wall.courses.forEach((course: string, i: number) => {
     const cn: number = i + 1;
@@ -50,7 +48,7 @@ const getWallGeometry = (options: GetWallGeometryOptions): any => {
         const gapY = y - gapHeight;
         const gapWidth = brickWidth + (2 * MORTAR_THICKNESS);
         // console.log(`gap C${cn} - (x,y,w,h): ${gapX}, ${gapY}, ${gapWidth}, ${gapHeight}`);
-        const gapShape = createRectShape(-halfWidth+gapX, -halfHeight+gapY, gapWidth, gapHeight);
+        const gapShape = createRectShape(gapX, gapY, gapWidth, gapHeight);
         wallShape.holes.push(gapShape);
         // const gapGeometry = new THREE.ShapeGeometry(gapShape);
         // geometry.merge(gapGeometry);
@@ -59,13 +57,13 @@ const getWallGeometry = (options: GetWallGeometryOptions): any => {
     });
   });
 
-  // const geometry = new THREE.ShapeGeometry(wallShape);
   const extrudeSettings = {
     bevelEnabled: false,
     depth,
   }
   const geometry = new THREE.ExtrudeGeometry(wallShape, extrudeSettings );
 
+  // const geometry = new THREE.ShapeGeometry(wallShape);
   geometry.center();
 
 	return geometry;
@@ -84,7 +82,6 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
     return;
   }
 
-  const { courses, coursingChart } = wall;
   const width = getWallWidth(wall);
   const height = getWallHeight(wall);
   const depth = wall.brickPalette.S; // double thickness
@@ -99,17 +96,23 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   // Camera
   const fov = 75; // field-of-view (degrees)
   const cameraPositionZ = calculateCameraZPosition(fov, halfWidth, halfHeight);
-  console.log('cameraPositionZ:', cameraPositionZ);
   const aspect = 2;  // the canvas default
   const near = 0.1;
   const far = cameraPositionZ * 2;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-
-  // camera.position.z = 2;
-  camera.position.z = calculateCameraZPosition(fov, halfWidth, halfHeight);
+  // camera.position.z = 2000;
+  camera.position.z = cameraPositionZ;
+  console.log('camera.position:', camera.position);
 
   // Scene
   const scene = new THREE.Scene();
+
+  // Plane Geometry (Test Camera)
+  // const planeGeometry = new THREE.PlaneGeometry(1000, 1000);
+  // // const planeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00});
+  // const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  // scene.add(plane);
 
   // Wall Geometry
   const geometry = getWallGeometry({
@@ -117,38 +120,29 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
     width,
     height,
     depth,
-    halfWidth,
-    halfHeight,
   });
 
   // Material
   // The `MeshBasicMaterial` is not affected by lights.
   // Use a `MeshPhongMaterial` which is.
   // const material = new THREE.MeshBasicMaterial({color: BRICK_COLOR});
-  const material = new THREE.MeshPhongMaterial({color: BRICK_COLOR});
+  const material = new THREE.MeshPhongMaterial({color: BRICK_COLOR, side: THREE.DoubleSide });
+  // const material = new THREE.MeshLambertMaterial({ color: 0xffffff })
+  // const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
 
   // Mesh
   const mesh = new THREE.Mesh(geometry, material);
+  console.log('mesh.position:', mesh.position);
+
+  const box = new THREE.Box3().setFromObject(mesh);
+  const size = new Vector3();
+  const centre = new Vector3();
+  box.getSize(size);
+  box.getCenter(centre);
+  console.log('mesh size:', box.min, box.max, size, centre);
 
   // Add to scene
   scene.add(mesh);
-  // mesh.position.set(-halfWidth, -halfHeight, -halfDepth);
-
-  // Render
-  renderer.render(scene, camera);
-
-  // Animate
-  const render = (time: number) => {
-    time *= 0.001;  // convert time from milliseconds to seconds
-
-    mesh.rotation.x = time; // radians
-    mesh.rotation.y = time; // radians
-
-    renderer.render(scene, camera);
-
-    requestAnimationFrame(render);
-  }
-  // requestAnimationFrame(render);
 
   // Add light
   const color = 0xFFFFFF;
@@ -156,6 +150,26 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   const light = new THREE.DirectionalLight(color, intensity);
   light.position.set(-1, 2, 4);
   scene.add(light);
+
+  // Animate
+  const render = (time: number) => {
+    time *= 0.001;  // convert time from milliseconds to seconds
+
+    // mesh.rotation.x = time; // radians
+    // mesh.rotation.y = time; // radians
+    const speed = .2;
+    const rot = time * speed;
+    // mesh.rotation.x = rot;
+    mesh.rotation.y = rot;
+
+    renderer.render(scene, camera);
+
+    requestAnimationFrame(render);
+  }
+
+  // Render
+  // renderer.render(scene, camera);
+  requestAnimationFrame(render);
 };
 
 interface Wall3DProps {
