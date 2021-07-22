@@ -71,9 +71,9 @@ const createWallGeometry = (wall: Wall): any => {
 	return geometry;
 }
 
-const calculateCameraZPosition = (fovDegrees: number, halfWallWidth: number, halfWallHeight: number): number => {
+const calculateCameraZPosition = (fovDegrees: number, halfWidthUnit: number, halfHeightUnit: number): number => {
   const a = (fovDegrees / 2) * Math.PI / 180;
-  const s = (1.2 * halfWallHeight) / 1000;
+  const s = 1.2 * halfHeightUnit;
   const z = s / Math.tan(a);
   return Math.ceil(z);
 };
@@ -92,9 +92,9 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   const height = getWallHeight(wall);
   const depth = wall.brickPalette.S; // double thickness
   console.log(`wall - (width, height, depth):, ${width}, ${height}, ${depth}`);
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
-  const halfDepth = depth / 2;
+  const halfWidthUnit = width / 2000;
+  const halfHeightUnit = height / 2000;
+  const halfDepthUnit = depth / 2000;
 
   // Renderer
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -104,7 +104,7 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
 
   // Camera
   const fov = 75; // field-of-view (degrees)
-  const cameraPositionZ = calculateCameraZPosition(fov, halfWidth, halfHeight);
+  const cameraPositionZ = calculateCameraZPosition(fov, halfWidthUnit, halfHeightUnit);
   const aspect = 2;  // the canvas default
   const near = 0.1;
   const far = cameraPositionZ * 2;
@@ -119,8 +119,8 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   // scene.background = new THREE.Color('red');
 
   // Help!
-  const axesHelper = new THREE.AxesHelper( 5 );
-  scene.add( axesHelper );
+  // const axesHelper = new THREE.AxesHelper( 5 );
+  // scene.add( axesHelper );
 
   // Plane Geometry (Test Camera)
   // const planeGeometry = new THREE.PlaneGeometry(1000, 1000);
@@ -146,10 +146,14 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   scene.add(wallMesh);
   // wallMesh.position.setX(-halfWidth);
 
-  const grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
+  // const grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
+  const size = 10;
+  const divisions = 10;
+  const grid = new THREE.GridHelper(size, divisions);
   // grid.material.opacity = 0.2;
   // grid.material.transparent = true;
-  // scene.add( grid );
+  grid.position.setY(-halfHeightUnit);
+  scene.add( grid );
 
   // const box = new THREE.Box3().setFromObject(mesh);
   // const size = new Vector3();
@@ -161,7 +165,8 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
   // Ground
   const groundLength = width * 2;
   const ground = new THREE.Mesh( new THREE.PlaneGeometry( groundLength, groundLength ), new THREE.MeshBasicMaterial( { color: 0x999999, depthWrite: false } ) );
-  // ground.rotation.x = - Math.PI / 2;
+  ground.rotation.x = - Math.PI / 2;
+  ground.position.setY(-halfHeightUnit);
   scene.add( ground );
 
   // Add light
@@ -181,8 +186,9 @@ const renderWall = (canvas: HTMLCanvasElement | null, wall: Wall) => {
     const rot = time * speed;
     // mesh.rotation.x = rot;
     wallMesh.rotation.y = rot;
+    grid.rotation.y = rot;
 
-    ground.rotation.x = rot;
+    // ground.rotation.x = rot;
     renderer.render(scene, camera);
 
     requestAnimationFrame(render);
