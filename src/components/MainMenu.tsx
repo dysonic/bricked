@@ -13,6 +13,7 @@ export const MainMenu: FC<MainMenuProps> = () => {
       <Link to="/brickwork">Brickwork</Link>
       <Link to="/build-wall">Build Wall</Link>
       <Link to="/edit-wall">Edit Wall</Link>
+      <Link to="/export-wall">Export Wall</Link>
     </nav>
   );
 };

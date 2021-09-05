@@ -15,6 +15,7 @@ import { CoursingChartContainer } from '../features/brick/CoursingChartContainer
 import { BrickworkContainer } from '../features/brick/BrickworkContainer';
 import { BuildWallContainer } from '../features/wall/BuildWallContainer';
 import { EditWallContainer } from '../features/wall/EditWallContainer';
+import { ExportWallContainer } from '../features/wall/ExportWallContainer';
 
 export const App = () => {
   const dispatch = useDispatch();
@@ -55,6 +56,9 @@ export const App = () => {
                 </Route>
                 <Route path="/edit-wall">
                   <EditWallContainer />
+                </Route>
+                <Route path="/export-wall">
+                  <ExportWallContainer />
                 </Route>
             </Switch>
           </main>
